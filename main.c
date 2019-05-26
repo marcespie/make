@@ -695,13 +695,9 @@ main(int argc, char **argv)
 	/*
 	 * Initialize various variables.
 	 *	MAKE also gets this name, for compatibility
-	 *	.MAKEFLAGS gets set to the empty string just in case.
-	 *	MFLAGS also gets initialized empty, for compatibility.
 	 */
 	Var_Set("MAKE", argv[0]);
 	Var_Set(".MAKE", argv[0]);
-	Var_Set(MAKEFLAGS, "");
-	Var_Set("MFLAGS", "");
 	Var_Set("MACHINE", machine);
 	Var_Set("MACHINE_ARCH", machine_arch);
 	Var_Set("MACHINE_CPU", machine_cpu);
@@ -725,7 +721,6 @@ main(int argc, char **argv)
 
 	/* And set up everything for sub-makes */
 	Var_AddCmdline(MAKEFLAGS);
-
 
 	/*
 	 * Set up the .TARGETS variable to contain the list of targets to be
@@ -757,11 +752,16 @@ main(int argc, char **argv)
 
 	read_all_make_rules(noBuiltins, read_depend, &makefiles, &d);
 
-	Var_Append("MFLAGS", Var_Value(MAKEFLAGS));
+	p = Var_Value(MAKEFLAGS);
+	if (p == NULL) {
+		p = "";
+		Var_Set(MAKEFLAGS, p);
+	}
+
+	Var_Append("MFLAGS", p);
 
 	/* Install all the flags into the MAKEFLAGS env variable. */
-	if (((p = Var_Value(MAKEFLAGS)) != NULL) && *p)
-		esetenv("MAKEFLAGS", p);
+	esetenv("MAKEFLAGS", p);
 
 	setup_VPATH();
 

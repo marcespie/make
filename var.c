@@ -1448,6 +1448,7 @@ Var_AddCmdline(const char *name)
 	char *s;
 
 	Buf_Init(&buf, MAKE_BSIZE);
+	bool first = true;
 
 	for (v = ohash_first(&global_variables, &i); v != NULL;
 	    v = ohash_next(&global_variables, &i)) {
@@ -1458,6 +1459,9 @@ Var_AddCmdline(const char *name)
 		if (!(v->flags & VAR_FROM_CMD)) {
 			continue;
 		}
+		if (!first)
+			Buf_AddSpace(&buf);
+		first = false;
 		/* We assume variable names don't need quoting */
 		Buf_AddString(&buf, v->name);
 		Buf_AddChar(&buf, '=');
@@ -1466,7 +1470,6 @@ Var_AddCmdline(const char *name)
 				Buf_AddChar(&buf, '\\');
 			Buf_AddChar(&buf, *s);
 		}
-		Buf_AddSpace(&buf);
 	}
 	Var_Append(name, Buf_Retrieve(&buf));
 	Buf_Destroy(&buf);
