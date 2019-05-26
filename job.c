@@ -93,6 +93,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <ctype.h>
+#include <err.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
@@ -849,6 +850,8 @@ handle_one_job(Job *job)
 	while (1) {
 		handle_all_signals();
 		stat = waitpid(job->pid, &status, WNOHANG);
+		if (stat == -1)
+			err(2, "waitpid");
 		if (stat == job->pid)
 			break;
 		sigsuspend(&emptyset);
