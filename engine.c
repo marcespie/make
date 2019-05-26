@@ -532,7 +532,7 @@ setup_meta(void)
 {
 	char *p;
 
-	for (p = "#=|^(){};&<>*?[]:$`\\\n~"; *p != '\0'; p++)
+	for (p = "#|^(){};&<>*?[]:$`\\\n~"; *p != '\0'; p++)
 		meta[(unsigned char) *p] = 1;
 	/* The null character serves as a sentinel in the string.  */
 	meta[0] = 1;
@@ -542,12 +542,28 @@ static char **
 recheck_command_for_shell(char **av)
 {
 	char *runsh[] = {
-		"!", "alias", "cd", "eval", "exit", "read", "set", "ulimit",
-		"unalias", "unset", "wait", "umask", NULL
+		"!", "alias", "cd", "command", "eval", "exit",
+		"read", "set", "ulimit", "unalias", "unset", "wait", 
+		"umask", "type", NULL
 	};
 
 	char **p;
+	size_t i;
 
+	/* look for env variables in the first args */
+	while (strchr(av[0], '=') != NULL) {
+		/* paranoia */
+		if (!(isalpha(av[0][0]) || av[0][0] == '_'))
+			return NULL;
+		for (i = 1; av[0][i] != '='; i++)
+			if (!(isalpha(av[0][i]) || isdigit(av[0][i]|| 
+			    av[0][i] == '_')))
+				return NULL;
+		putenv(av[0]);
+		av++;
+		if (!av[0])
+			return NULL;
+	}
 	/* optimization: if exec cmd, we avoid the intermediate shell */
 	if (strcmp(av[0], "exec") == 0)
 		av++;
