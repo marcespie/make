@@ -131,6 +131,7 @@ static GNode	*predecessor;
 
 static void ParseLinkSrc(GNode *, GNode *);
 static int ParseDoOp(GNode **, unsigned int);
+static void ParseDoSpecial(GNode *, unsigned int);
 static int ParseAddDep(GNode *, GNode *);
 static void ParseDoSrc(struct growableArray *, struct growableArray *, int,
     const char *, const char *);
@@ -282,11 +283,12 @@ operator_string(int op)
  *	Apply the parsed operator to the given target node. Used in a
  *	Array_Find call by ParseDoDependency once all targets have
  *	been found and their operator parsed. If the previous and new
- *	operators are incompatible, a major error is taken.
+ *	operators are incompatible, a major error is taken, and the find
+ *	stops early
  *
  * Side Effects:
- *	The type field of the node is altered to reflect any new bits in
- *	the op.
+ *	The node is set to the right dependency operator.
+ *	Cohorts may be created for double dep.
  *---------------------------------------------------------------------
  */
 static int
@@ -298,8 +300,7 @@ ParseDoOp(GNode **gnp, unsigned int op)
 	 * the node has actually had an operator applied to it before, and the
 	 * operator actually has some dependency information in it, complain.
 	 */
-	if (((op & OP_OPMASK) != (gn->type & OP_OPMASK)) &&
-	    !OP_NOP(gn->type) && !OP_NOP(op)) {
+	if (op != (gn->type & OP_OPMASK) && !OP_NOP(gn->type)) {
 		Parse_Error(PARSE_FATAL, 
 		    "Inconsistent dependency operator for target %s\n"
 		    "\t(was %s%s, now %s%s)",
@@ -308,7 +309,7 @@ ParseDoOp(GNode **gnp, unsigned int op)
 		return 0;
 	}
 
-	if (op == OP_DOUBLEDEP && ((gn->type & OP_OPMASK) == OP_DOUBLEDEP)) {
+	if (op == OP_DOUBLEDEP && (gn->type & OP_OPMASK) == OP_DOUBLEDEP) {
 		/* If the node was the object of a :: operator, we need to
 		 * create a new instance of it for the children and commands on
 		 * this dependency line. The new instance is placed on the
@@ -335,10 +336,15 @@ ParseDoOp(GNode **gnp, unsigned int op)
 		*gnp = cohort;
 		gn = cohort;
 	}
-	/* We don't want to nuke any previous flags (whatever they were) so we
-	 * just OR the new operator into the old.  */
+	/* Preserve possible special flags already applied to the operator */
 	gn->type |= op;
 	return 1;
+}
+
+static void
+ParseDoSpecial(GNode *gn, unsigned int special_op)
+{
+	gn->type |= special_op;
 }
 
 /*-
@@ -404,7 +410,7 @@ ParseDoSrc(
 	GNode *gn = Targ_FindNodei(src, esrc, TARG_CREATE);
 	if ((gn->special & SPECIAL_SOURCE) != 0) {
 		if (gn->special_op) {
-			Array_FindP(targets, ParseDoOp, gn->special_op);
+			Array_ForEach(targets, ParseDoSpecial, gn->special_op);
 			return;
 		} else {
 			assert((gn->special & SPECIAL_MASK) == SPECIAL_WAIT);
