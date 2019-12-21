@@ -295,6 +295,7 @@ static int
 ParseDoOp(GNode **gnp, unsigned int op)
 {
 	GNode *gn = *gnp;
+	assert(op == (op & OP_OPMASK));
 	/*
 	 * If the dependency mask of the operator and the node don't match and
 	 * the node has actually had an operator applied to it before, and the
