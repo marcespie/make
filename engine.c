@@ -373,11 +373,11 @@ Make_DoAllVar(GNode *gn)
 		 */
 		do_oodate = false;
 		if (gn->type & OP_JOIN) {
-			if (child->built_status == MADE)
+			if (child->built_status == REBUILT)
 				do_oodate = true;
 		} else if (is_strictly_before(gn->mtime, child->mtime) ||
 		   (!is_strictly_before(child->mtime, starttime) &&
-		   child->built_status == MADE))
+		   child->built_status == REBUILT))
 		   	do_oodate = true;
 		if (do_oodate) {
 			oodate_count++;
@@ -703,7 +703,7 @@ run_gnode(GNode *gn)
 	if (!gn || (gn->type & OP_DUMMY))
 		return NOSUCHNODE;
 
-	gn->built_status = MADE;
+	gn->built_status = REBUILT;
 
 	job_attach_node(&myjob, gn);
 	while (myjob.exit_type == JOB_EXIT_OKAY) {

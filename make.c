@@ -279,7 +279,7 @@ Make_Update(GNode *cgn)	/* the child node */
 				    pgn->name, pgn->unmade);
 
 			if ( ! (cgn->type & (OP_EXEC|OP_USE))) {
-				if (cgn->built_status == MADE)
+				if (cgn->built_status == REBUILT)
 					pgn->childMade = true;
 				(void)Make_TimeStamp(pgn, cgn);
 			}
