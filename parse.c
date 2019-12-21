@@ -287,7 +287,7 @@ operator_string(int op)
  *	stops early
  *
  * Side Effects:
- *	The node is set to the right dependency operator.
+ *	The node gets the right dependency operator.
  *	Cohorts may be created for double dep.
  *---------------------------------------------------------------------
  */
@@ -295,47 +295,57 @@ static int
 ParseDoOp(GNode **gnp, unsigned int op)
 {
 	GNode *gn = *gnp;
+
 	assert(op == (op & OP_OPMASK));
-	/*
-	 * If the dependency mask of the operator and the node don't match and
-	 * the node has actually had an operator applied to it before, and the
-	 * operator actually has some dependency information in it, complain.
-	 */
-	if (op != (gn->type & OP_OPMASK) && !OP_NOP(gn->type)) {
-		Parse_Error(PARSE_FATAL, 
-		    "Inconsistent dependency operator for target %s\n"
-		    "\t(was %s%s, now %s%s)",
-		    gn->name, gn->name, operator_string(gn->type), 
-		    gn->name, operator_string(op));
-		return 0;
-	}
 
-	if (op == OP_DOUBLEDEP && (gn->type & OP_OPMASK) == OP_DOUBLEDEP) {
-		/* If the node was the object of a :: operator, we need to
-		 * create a new instance of it for the children and commands on
-		 * this dependency line. The new instance is placed on the
-		 * 'cohorts' list of the initial one (note the initial one is
-		 * not on its own cohorts list) and the new instance is linked
-		 * to all parents of the initial instance.  */
-		GNode *cohort;
-		LstNode ln;
+	/* if the node didn't already appear on the left hand side (no known
+	 * dependency operator), we don't need to do much. */
+	if (!OP_NOP(gn->type)) {
+		/*
+		 * If the dependency mask of the operator and the node don't
+		 * match and the node has actually had an operator applied to
+		 * it before, and the operator actually has some dependency
+		 * information in it, complain.  */
+		if (op != (gn->type & OP_OPMASK)) {
+			Parse_Error(PARSE_FATAL, 
+			    "Inconsistent dependency operator for target %s\n"
+			    "\t(was %s%s, now %s%s)",
+			    gn->name, gn->name, operator_string(gn->type), 
+			    gn->name, operator_string(op));
+			return 0;
+		}
 
-		cohort = Targ_NewGN(gn->name);
-		/* Duplicate links to parents so graph traversal is simple.
-		 * Perhaps some type bits should be duplicated?
-		 *
-		 * Make the cohort invisible as well to avoid duplicating it
-		 * into other variables. True, parents of this target won't
-		 * tend to do anything with their local variables, but better
-		 * safe than sorry.  */
-		for (ln = Lst_First(&gn->parents); ln != NULL; ln = Lst_Adv(ln))
-			ParseLinkSrc(Lst_Datum(ln), cohort);
-		cohort->type = OP_DOUBLEDEP|OP_INVISIBLE;
-		Lst_AtEnd(&gn->cohorts, cohort);
+		if (op == OP_DOUBLEDEP) {
+			/* If the node was the object of a :: operator, we need
+			 * to create a new instance of it for the children and
+			 * commands on this dependency line. The new instance
+			 * is placed on the 'cohorts' list of the initial one
+			 * (note the initial one is not on its own cohorts
+			 * list) and the new instance is linked to all parents
+			 * of the initial instance.  */
+			GNode *cohort;
+			LstNode ln;
 
-		/* Replace the node in the targets list with the new copy */
-		*gnp = cohort;
-		gn = cohort;
+			cohort = Targ_NewGN(gn->name);
+			/* Duplicate links to parents so graph traversal is
+			 * simple.  Perhaps some type bits should be
+			 * duplicated?
+			 *
+			 * Make the cohort invisible as well to avoid
+			 * duplicating it into other variables. True, parents
+			 * of this target won't tend to do anything with their
+			 * local variables, but better safe than sorry.  */
+			for (ln = Lst_First(&gn->parents); ln != NULL; 
+			    ln = Lst_Adv(ln))
+				ParseLinkSrc(Lst_Datum(ln), cohort);
+			cohort->type = OP_DOUBLEDEP|OP_INVISIBLE;
+			Lst_AtEnd(&gn->cohorts, cohort);
+
+			/* Replace the node in the targets list with the new
+			 * copy */
+			*gnp = cohort;
+			gn = cohort;
+		}
 	}
 	/* Preserve possible special flags already applied to the operator */
 	gn->type |= op;
