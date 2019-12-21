@@ -260,7 +260,9 @@ CondDoDefined(struct Name *arg)
  *	Handle the 'make' function for conditionals.
  *
  * Results:
- *	true if the given target is being made.
+ *	true if the given target is currently being built,
+ *	either explicitly on the command line, or implicitly as the
+ *	default target.
  *-----------------------------------------------------------------------
  */
 static bool

@@ -169,7 +169,7 @@ kludge_look_harder_for_target(GNode *gn)
 
 				if (Lst_AddNew(&gn->children, cgn)) {
 					Lst_AtEnd(&cgn->parents, gn);
-					gn->unmade++;
+					gn->children_left++;
 				}
 			}
 		}
