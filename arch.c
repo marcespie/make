@@ -883,7 +883,7 @@ Arch_MemMTime(GNode *gn)
 
 		if (pgn->type & OP_ARCHV) {
 			/* If the parent is an archive specification and is
-			 * being made and its member's name matches the name of
+			 * being built and its member's name matches the name of
 			 * the node we were given, record the modification time
 			 * of the parent in the child. We keep searching its
 			 * parents in case some other parent requires this
