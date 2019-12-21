@@ -59,7 +59,7 @@
  *	    if considered for building, they should be built before this node.
  *	14) *successors*: list of nodes, result of .ORDER:
  *	    if considered for building, they should be built after this node.
- *	15) *context*: ``local'' variables specific to this target
+ *	15) *localvars*: ``local'' variables specific to this target
  *	   and this target only (cf var.c [$@ $< $?, etc.])
  *	16) *commands*: the actual LIST of strings to pass to the shell
  *	   to create this target.
@@ -127,14 +127,14 @@ struct GNode_ {
     struct timespec mtime;	/* Node's modification time */
     GNode *youngest;		/* Node's youngest child */
 
-    GNode *impliedsrc;	/* found by suff, to help with context */
+    GNode *impliedsrc;	/* found by suff, to help with localvars */
     LIST cohorts;	/* Other nodes for the :: operator */
     LIST parents;	/* Nodes that depend on this one */
     LIST children;	/* Nodes on which this one depends */
     LIST predecessors;
     LIST successors; 	
 
-    SymTable context;	/* Local variables */
+    SymTable localvars;
     LIST commands;	/* Creation commands */
     Suff *suffix;	/* Suffix for the node (determined by
 			 * Suff_FindDeps and opaque to everyone

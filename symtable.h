@@ -30,7 +30,7 @@
 #define LOCAL_SIZE	7
 
 /* SymTable is private to var.c, but is declared here to allow for
-   local declaration of context tables
+   local declaration of symbol tables
  */
 struct SymTable_ {
 	char *locals[LOCAL_SIZE];
