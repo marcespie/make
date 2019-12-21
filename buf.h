@@ -85,7 +85,7 @@ typedef struct Buffer_ {
 } BUFFER;
 
 /* Internal support for Buf_AddChar.  */
-extern void BufOverflow(Buffer);
+extern void BufExpand(Buffer, size_t);
 
 
 /* User interface */
@@ -117,7 +117,7 @@ extern void Buf_Init(Buffer, size_t);
 #define Buf_AddChar(bp, byte)			\
 do {						\
 	if ((bp)->endPtr - (bp)->inPtr <= 1)	\
-	    BufOverflow(bp);			\
+	    BufExpand(bp, 1);			\
 	*(bp)->inPtr++ = (byte);		\
 } while (0)
 
