@@ -150,8 +150,9 @@ Targ_NewGNi(const char *name, const char *ename)
 
 	gn = ohash_create_entry(&gnode_info, name, &ename);
 	gn->path = NULL;
-	gn->type = 0;
+	gn->type = OP_ZERO;
 	gn->special = SPECIAL_NONE;
+	gn->special_op = 0;
 	gn->children_left = 0;
 	gn->must_make = false;
 	gn->built_status = UNKNOWN;
