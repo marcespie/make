@@ -139,13 +139,15 @@ struct GNode_ {
     Suff *suffix;	/* Suffix for the node (determined by
 			 * Suff_FindDeps and opaque to everyone
 			 * but the Suff module) */
-    GNode *sibling;	/* equivalent targets (not complete yet) */
     GNode *groupling;	/* target lists, for HELDBACK: do not build two
     			 * at the same time */
     GNode *watched;	/* the node currently building for HELDBACK */
-    /* stuff for target name equivalence */
+
+			/* stuff for target name equivalence: */
+    GNode *sibling;	/* equivalent targets (not complete yet) */
     char *basename;	/* pointer to name stripped of path */
     GNode *next;
+
     bool in_cycle;	/* cycle detection */
     char name[1];	/* The target's name */
 };
