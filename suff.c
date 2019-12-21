@@ -919,7 +919,7 @@ SuffLinkParent(GNode *cgn, GNode *pgn)
 	if (!has_been_built(cgn))
 		pgn->unmade++;
 	else if ( ! (cgn->type & (OP_EXEC|OP_USE))) {
-		if (cgn->built_status == MADE)
+		if (cgn->built_status == REBUILT)
 			pgn->childMade = true;
 		(void)Make_TimeStamp(pgn, cgn);
 	}

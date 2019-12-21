@@ -302,7 +302,7 @@ status_to_string(GNode *gn)
 	switch (gn->built_status) {
 	case UNKNOWN:
 		return "unknown";
-	case MADE:
+	case REBUILT:
 		return "made";
 	case UPTODATE:
 		return "up-to-date";

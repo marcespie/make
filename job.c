@@ -536,7 +536,7 @@ postprocess_job(Job *job, bool okay)
 		/* As long as we aren't aborting and the job didn't return a
 		 * non-zero status that we shouldn't ignore, we call
 		 * Make_Update to update the parents. */
-		job->node->built_status = MADE;
+		job->node->built_status = REBUILT;
 		Make_Update(job->node);
 		free(job);
 	}
