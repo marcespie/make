@@ -165,7 +165,7 @@ Targ_NewGNi(const char *name, const char *ename)
 	Lst_Init(&gn->children);
 	Lst_Init(&gn->predecessors);
 	Lst_Init(&gn->successors);
-	SymTable_Init(&gn->context);
+	SymTable_Init(&gn->localvars);
 	gn->impliedsrc = NULL;
 	Lst_Init(&gn->commands);
 	gn->suffix = NULL;

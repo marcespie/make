@@ -825,7 +825,7 @@ job_run_next(Job *job)
 		handle_all_signals();
 		job->location = &command->location;
 		Parse_SetLocation(job->location);
-		job->cmd = Var_Subst(command->string, &gn->context, false);
+		job->cmd = Var_Subst(command->string, &gn->localvars, false);
 		job->next_cmd = Lst_Adv(job->next_cmd);
 		if (fatal_errors)
 			Punt(NULL);
