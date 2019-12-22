@@ -80,7 +80,9 @@
 
 #define SPECIAL_EXEC		4U
 #define SPECIAL_IGNORE		5U
-#define SPECIAL_NOTHING 	6U
+#define SPECIAL_NOTHING 	6U	/* this is used for things we
+					 * recognize for compatibility but
+					 * don't do anything with... */
 #define SPECIAL_INVISIBLE	8U
 #define SPECIAL_JOIN		9U
 #define SPECIAL_MADE		11U
