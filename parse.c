@@ -225,10 +225,9 @@ create_special_nodes()
 	unsigned int i;
 
 	for (i = 0; i < sizeof(specials)/sizeof(specials[0]); i++) {
-		GNode *gn = Targ_FindNodeh(specials[i].keyword,
-		    specials[i].sz, specials[i].hv, TARG_CREATE);
-		gn->special = specials[i].special;
-		gn->special_op = specials[i].special_op;
+		(void)Targ_mk_special_node(specials[i].keyword,
+		    specials[i].sz, specials[i].hv,
+		    OP_ZERO, specials[i].special, specials[i].special_op);
 	}
 }
 
