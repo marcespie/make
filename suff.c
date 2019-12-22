@@ -498,7 +498,7 @@ Suff_ParseAsTransform(const char *line, const char *end)
 
 	gn->type = OP_TRANSFORM;
 	if (s->flags & SUFF_PATH) {
-		gn->special = SPECIAL_PATH | SPECIAL_TARGET;
+		gn->special = SPECIAL_PATH;
 		gn->suffix = t;
 	}
 
@@ -587,7 +587,7 @@ build_suffixes_graph(void)
 	    gn = ohash_next(&transforms, &i)) {
 	    	if (Lst_IsEmpty(&gn->commands) && Lst_IsEmpty(&gn->children))
 			continue;
-		if ((gn->special & SPECIAL_MASK) == SPECIAL_PATH)
+		if (gn->special == SPECIAL_PATH)
 			continue;
 	    	if (parse_transform(gn->name, &s, &s2)) {
 			SuffInsert(&s2->children, s);
