@@ -864,7 +864,7 @@ ParseDoDependency(const char *line)	/* the line to parse */
 	if (!*line) {
 		switch (specType) {
 		case SPECIAL_SUFFIXES:
-			Suff_ClearSuffixes();
+			Suff_DisableAllSuffixes();
 			break;
 		case SPECIAL_PRECIOUS:
 			allPrecious = true;
