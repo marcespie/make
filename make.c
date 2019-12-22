@@ -71,6 +71,7 @@
 #include "suff.h"
 #include "var.h"
 #include "error.h"
+#include "expandchildren.h"
 #include "make.h"
 #include "gnode.h"
 #include "extern.h"
