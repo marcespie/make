@@ -181,7 +181,7 @@ static struct {
 	const char *keyword;
 	size_t sz;
 	uint32_t hv;
-	unsigned int type;
+	unsigned int special;
 	unsigned int special_op;
 } specials[] = {
     { P(NODE_EXEC),	SPECIAL_EXEC | SPECIAL_TARGETSOURCE,	OP_EXEC, },
@@ -227,7 +227,7 @@ create_special_nodes()
 	for (i = 0; i < sizeof(specials)/sizeof(specials[0]); i++) {
 		GNode *gn = Targ_FindNodeh(specials[i].keyword,
 		    specials[i].sz, specials[i].hv, TARG_CREATE);
-		gn->special = specials[i].type;
+		gn->special = specials[i].special;
 		gn->special_op = specials[i].special_op;
 	}
 }
