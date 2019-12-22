@@ -104,7 +104,7 @@ TargPrintNode(GNode *gn, bool full)
 {
 	if (OP_NOP(gn->type))
 		return;
-	switch((gn->special & SPECIAL_MASK)) {
+	switch(gn->special) {
 	case SPECIAL_SUFFIXES:
 	case SPECIAL_PHONY:
 	case SPECIAL_ORDER:
