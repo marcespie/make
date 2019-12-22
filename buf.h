@@ -106,6 +106,9 @@ extern void Buf_AddChars(Buffer, size_t, const char *);
  *	Initializes a buffer, to hold approximately init chars.
  *	Set init to 0 if you have no idea.  */
 extern void Buf_Init(Buffer, size_t);
+/* Buf_Reinit(buf, init);
+ *	Initializes/reset a static buffer */
+extern void Buf_Reinit(Buffer, size_t);
 /* Buf_Destroy(buf);
  * 	Nukes a buffer and all its resources.	*/
 #define Buf_Destroy(bp) ((void)free((bp)->buffer))

@@ -154,6 +154,15 @@ Buf_printf(Buffer bp, const char *fmt, ...)
 }
 
 void
+Buf_Reinit(Buffer bp, size_t size)
+{
+	if (bp->buffer == NULL)
+		Buf_Init(bp, size);
+	else
+		Buf_Reset(bp);
+}
+
+void
 Buf_Init(Buffer bp, size_t size)
 {
 #ifdef STATS_BUF
