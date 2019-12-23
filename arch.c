@@ -195,11 +195,10 @@ bool
 Arch_ParseArchive(const char **line, Lst nodes, SymTable *ctxt)
 {
 	bool result;
-	BUFFER expand;
+	static BUFFER expand;
 
-	Buf_Init(&expand, MAKE_BSIZE);
+	Buf_Reinit(&expand, MAKE_BSIZE);
 	result = parse_archive(&expand, line, nodes, ctxt);
-	Buf_Destroy(&expand);
 	return result;
 }
 
