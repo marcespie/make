@@ -73,8 +73,6 @@
  *	Job_Begin		execute commands attached to the .BEGIN target
  *				if any.
  *
- *	can_start_job		Return true if we can start job
- *
  *	Job_Empty		Return true if the job table is completely
  *				empty.
  *
@@ -760,15 +758,6 @@ Job_Init(int maxproc)
 
 	aborting = 0;
 	setup_all_signals();
-}
-
-bool
-can_start_job(void)
-{
-	if (aborting || nJobs >= maxJobs)
-		return false;
-	else
-		return true;
 }
 
 bool
