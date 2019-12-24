@@ -106,42 +106,6 @@ static bool has_predecessor_left_to_build(GNode *);
 static void requeue_successors(GNode *);
 static void random_setup(void);
 
-static bool randomize_queue;
-long random_delay = 0;
-
-static void
-random_setup()
-{
-	randomize_queue = Var_Definedi("RANDOM_ORDER", NULL);
-
-/* no random delay in the new engine for now */
-#if 0
-	if (Var_Definedi("RANDOM_DELAY", NULL))
-		random_delay = strtonum(Var_Value("RANDOM_DELAY"), 0, 1000,
-		    NULL) * 1000000;
-#endif
-
-}
-
-static void
-randomize_garray(struct growableArray *g)
-{
-	/* This is a fairly standard algorithm to randomize an array. */
-	unsigned int i, v;
-	GNode *e;
-
-	for (i = g->n; i > 0; i--) {
-		v = arc4random_uniform(i);
-		if (v == i-1)
-			continue;
-		else {
-			e = g->a[i-1];
-			g->a[i-1] = g->a[v];
-			g->a[v] = e;
-		}
-	}
-}
-
 static bool
 has_predecessor_left_to_build(GNode *gn)
 {
