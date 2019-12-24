@@ -41,12 +41,6 @@
  *	their suitability for creation
  *
  * Interface:
- *	Make_Run		Initialize things for the module and recreate
- *				whatever needs recreating. Returns true if
- *				work was (or would have been) done and
- *				false
- *				otherwise.
- *
  *	Make_Update		Update all parents of a given child. Performs
  *				various bookkeeping chores like finding the
  *				youngest child of the parent, filling
