@@ -334,56 +334,6 @@ MakeHandleUse(void *cgnp, void *pgnp)
 		Make_HandleUse(cgn, pgn);
 }
 
-/* Add stuff to the to_build queue. we try to sort things so that stuff
- * that can be done directly is done right away.  This won't be perfect,
- * since some dependencies are only discovered later (e.g., SuffFindDeps).
- */
-static void
-add_targets_to_make(Lst todo)
-{
-	GNode *gn;
-
-	unsigned int slot;
-
-	AppendList2Array(todo, &examine);
-
-	while ((gn = Array_Pop(&examine)) != NULL) {
-		if (gn->must_make) 	/* already known */
-			continue;
-		gn->must_make = true;
-
-		slot = ohash_qlookup(&targets, gn->name);
-		if (!ohash_find(&targets, slot))
-			ohash_insert(&targets, slot, gn);
-
-
-		look_harder_for_target(gn);
-		kludge_look_harder_for_target(gn);
-		/*
-		 * Apply any .USE rules before looking for implicit
-		 * dependencies to make sure everything that should have
-		 * commands has commands ...
-		 */
-		Lst_ForEach(&gn->children, MakeHandleUse, gn);
-		Suff_FindDeps(gn);
-		expand_all_children(gn);
-
-		if (gn->children_left != 0) {
-			if (DEBUG(MAKE))
-				printf("%s: not queuing (%d children left to build)\n",
-				    gn->name, gn->children_left);
-			Lst_ForEach(&gn->children, MakeAddChild,
-			    &examine);
-		} else {
-			if (DEBUG(MAKE))
-				printf("%s: queuing\n", gn->name);
-			Array_Push(&to_build, gn);
-		}
-	}
-	if (randomize_queue)
-		randomize_garray(&to_build);
-}
-
 
 /* round-about detection: assume make is bug-free, if there are targets
  * that have not been touched, it means they never were reached, so we can
