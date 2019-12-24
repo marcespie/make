@@ -702,8 +702,6 @@ run_gnode(GNode *gn)
 	if (!gn || (gn->type & OP_DUMMY))
 		return NOSUCHNODE;
 
-	gn->built_status = REBUILT;
-
 	job_attach_node(&myjob, gn);
 	while (myjob.exit_type == JOB_EXIT_OKAY) {
 		bool finished = job_run_next(&myjob);
