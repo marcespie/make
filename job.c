@@ -125,7 +125,6 @@ static int	maxJobs;	/* The most children we can run at once */
 static int	nJobs;		/* Number of jobs already allocated */
 Job *runningJobs;		/* Jobs currently running a process */
 Job *errorJobs;			/* Jobs in error at end */
-static Job *heldJobs;		/* Jobs not running yet because of expensive */
 static pid_t mypid;		/* Used for printing debugging messages */
 
 static volatile sig_atomic_t got_fatal;
@@ -638,17 +637,6 @@ remove_job(Job *job, bool okay)
 {
 	nJobs--;
 	postprocess_job(job, okay);
-	while (true) {
-		if (heldJobs != NULL) {
-			job = heldJobs;
-			heldJobs = heldJobs->next;
-			if (DEBUG(EXPENSIVE))
-				fprintf(stderr, "[%ld] cheap -> release %s\n",
-				    (long)mypid, job->node->name);
-			continue_job(job);
-		} else
-			break;
-	}
 }
 
 /*
@@ -764,7 +752,6 @@ void
 Job_Init(int maxproc)
 {
 	runningJobs = NULL;
-	heldJobs = NULL;
 	errorJobs = NULL;
 	maxJobs = maxproc;
 	mypid = getpid();
