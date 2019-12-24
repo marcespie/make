@@ -99,25 +99,7 @@ static void MakePrintStatus(void *);
 static bool try_to_make_node(GNode *);
 static void add_targets_to_make(Lst);
 
-static void requeue_successors(GNode *);
 static void random_setup(void);
-
-static void
-requeue_successors(GNode *gn)
-{
-	LstNode ln;
-	/* Deal with successor nodes. If any is marked for making and has an
-	 * children_left count of 0, has not been made and isn't in the 
-	 * examination queue, it means we need to place it in the queue as 
-	 * it restrained itself before.	*/
-	for (ln = Lst_First(&gn->successors); ln != NULL; ln = Lst_Adv(ln)) {
-		GNode	*succ = Lst_Datum(ln);
-
-		if (succ->must_make && succ->children_left == 0
-		    && succ->built_status == UNKNOWN)
-			Array_PushNew(&to_build, succ);
-	}
-}
 
 /*-
  *-----------------------------------------------------------------------
@@ -201,7 +183,6 @@ Make_Update(GNode *cgn)	/* the child node */
 	}
 	if (DEBUG(MAKE))
 		printf("\n");
-	requeue_successors(cgn);
 }
 
 static void
