@@ -88,9 +88,6 @@
  * MakeStartJobs */
 static struct growableArray to_build;	
 
-/* Hold back on nodes where equivalent stuff is already building... */
-static struct growableArray heldBack;
-
 static struct ohash targets;	/* stuff we must build */
 
 static void MakeAddChild(void *, void *);
@@ -145,27 +142,6 @@ requeue_successors(GNode *gn)
 	}
 }
 
-static void
-requeue(GNode *gn)
-{
-	/* this is where we go inside the array and move things around */
-	unsigned int i, j;
-
-	for (i = 0, j = 0; i < heldBack.n; i++, j++) {
-		if (heldBack.a[i]->watched == gn) {
-			j--;
-			heldBack.a[i]->built_status = UNKNOWN;
-			if (DEBUG(HELDJOBS))
-				printf("%s finished, releasing: %s\n",
-				    gn->name, heldBack.a[i]->name);
-			Array_Push(&to_build, heldBack.a[i]);
-			continue;
-		}
-		heldBack.a[j] = heldBack.a[i];
-	}
-	heldBack.n = j;
-}
-
 /*-
  *-----------------------------------------------------------------------
  * Make_Update	--
@@ -217,7 +193,6 @@ Make_Update(GNode *cgn)	/* the child node */
 			    time_to_string(&cgn->mtime));
 	}
 
-	requeue(cgn);
 	/* SIB: this is where I should mark the build as finished */
 	for (ln = Lst_First(&cgn->parents); ln != NULL; ln = Lst_Adv(ln)) {
 		pgn = Lst_Datum(ln);
