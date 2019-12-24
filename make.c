@@ -99,31 +99,8 @@ static void MakePrintStatus(void *);
 static bool try_to_make_node(GNode *);
 static void add_targets_to_make(Lst);
 
-static bool has_predecessor_left_to_build(GNode *);
 static void requeue_successors(GNode *);
 static void random_setup(void);
-
-static bool
-has_predecessor_left_to_build(GNode *gn)
-{
-	LstNode ln;
-
-	if (Lst_IsEmpty(&gn->predecessors))
-		return false;
-
-
-	for (ln = Lst_First(&gn->predecessors); ln != NULL; ln = Lst_Adv(ln)) {
-		GNode	*pgn = Lst_Datum(ln);
-
-		if (pgn->must_make && pgn->built_status == UNKNOWN) {
-			if (DEBUG(MAKE))
-				printf("predecessor %s not made yet.\n",
-				    pgn->name);
-			return true;
-		}
-	}
-	return false;
-}
 
 static void
 requeue_successors(GNode *gn)
