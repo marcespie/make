@@ -397,33 +397,6 @@ try_to_make_node(GNode *gn)
 	return false;
 }
 
-/*
- *-----------------------------------------------------------------------
- * MakeStartJobs --
- *	Start as many jobs as possible.
- *
- * Results:
- *	If the query flag was given to pmake, no job will be started,
- *	but as soon as an out-of-date target is found, this function
- *	returns true. At all other times, this function returns false.
- *
- * Side Effects:
- *	Nodes are removed from the to_build queue and job table slots
- *	are filled.
- *-----------------------------------------------------------------------
- */
-static bool
-MakeStartJobs(void)
-{
-	GNode	*gn;
-
-	while (can_start_job() && (gn = Array_Pop(&to_build)) != NULL) {
-		if (try_to_make_node(gn))
-			return true;
-	}
-	return false;
-}
-
 static void
 MakePrintStatus(void *gnp)
 {
