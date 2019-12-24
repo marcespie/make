@@ -666,9 +666,6 @@ job_handle_status(Job *job, int status)
 			printf(" in target '%s'", job->node->name);
 		if (job->flags & JOB_ERRCHECK) {
 			job->node->built_status = ERROR;
-			/* compute expensive status if we really want it */
-			if ((job->flags & JOB_SILENT) && job == &myjob)
-				determine_expensive_job(job);
 			if (!keepgoing) {
 				if (!silent)
 					printf("\n");

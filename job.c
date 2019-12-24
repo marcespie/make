@@ -123,9 +123,6 @@ static int	aborting = 0;	    /* why is the make aborting? */
 
 static int	maxJobs;	/* The most children we can run at once */
 static int	nJobs;		/* Number of jobs already allocated */
-static bool	no_new_jobs;	/* Mark recursive shit so we shouldn't start
-				 * something else at the same time
-				 */
 Job *runningJobs;		/* Jobs currently running a process */
 Job *errorJobs;			/* Jobs in error at end */
 static Job *heldJobs;		/* Jobs not running yet because of expensive */
@@ -551,98 +548,6 @@ postprocess_job(Job *job, bool okay)
 		Finish();
 }
 
-/* expensive jobs handling: in order to avoid forking an exponential number
- * of jobs, make tries to figure out "recursive make" configurations.
- * It may err on the side of caution.
- * Basically, a command is "expensive" if it's likely to fork an extra
- * level of make: either by looking at the command proper, or if it has
- * some specific qualities ('+cmd' are likely to be recursive, as are
- * .MAKE: commands).  It's possible to explicitly say some targets are
- * expensive or cheap with .EXPENSIVE or .CHEAP.
- *
- * While an expensive command is running, no_new_jobs
- * is set, so jobs that would fork new processes are accumulated in the
- * heldJobs list instead.
- *
- * This heuristics is also used on error exit: we display silent commands
- * that failed, unless those ARE expensive commands: expensive commands
- * are likely to not be failing by themselves, but to be the result of
- * a cascade of failures in descendant makes.
- */
-void
-determine_expensive_job(Job *job)
-{ 
-	if (expensive_job(job)) {
-		job->flags |= JOB_IS_EXPENSIVE;
-		no_new_jobs = true;
-	} else
-		job->flags &= ~JOB_IS_EXPENSIVE;
-	if (DEBUG(EXPENSIVE))
-		fprintf(stderr, "[%ld] Target %s running %.50s: %s\n",
-		    (long)mypid, job->node->name, job->cmd,
-		    job->flags & JOB_IS_EXPENSIVE ? "expensive" : "cheap");
-}
-
-static bool
-expensive_job(Job *job)
-{
-	if (job->node->type & OP_CHEAP)
-		return false;
-	if (job->node->type & (OP_EXPENSIVE | OP_MAKE))
-		return true;
-	return expensive_command(job->cmd);
-}
-
-static bool
-expensive_command(const char *s)
-{
-	const char *p;
-	bool include = false;
-	bool expensive = false;
-
-	/* okay, comments are cheap, always */
-	if (*s == '#')
-		return false;
-	/* and commands we always execute are expensive */
-	if (*s == '+')
-		return true;
-
-	for (p = s; *p != '\0'; p++) {
-		if (*p == ' ' || *p == '\t') {
-			include = false;
-			if (p[1] == '-' && p[2] == 'I')
-				include = true;
-		}
-		if (include)
-			continue;
-		/* KMP variant, avoid looking twice at the same
-		 * letter.
-		 */
-		if (*p != 'm')
-			continue;
-		if (p[1] != 'a')
-			continue;
-		p++;
-		if (p[1] != 'k')
-			continue;
-		p++;
-		if (p[1] != 'e')
-			continue;
-		p++;
-		expensive = true;
-		while (p[1] != '\0' && p[1] != ' ' && p[1] != '\t') {
-			if (p[1] == '.' || p[1] == '/') {
-				expensive = false;
-				break;
-			}
-		    	p++;
-		}
-		if (expensive)
-			return true;
-	}
-	return false;
-}
-
 static Job *
 prepare_job(GNode *gn)
 {
@@ -675,14 +580,7 @@ prepare_job(GNode *gn)
 static void
 may_continue_job(Job *job)
 {
-	if (no_new_jobs) {
-		if (DEBUG(EXPENSIVE))
-			fprintf(stderr, "[%ld] expensive -> hold %s\n",
-			    (long)mypid, job->node->name);
-		job->next = heldJobs;
-		heldJobs = job;
-	} else
-		continue_job(job);
+	continue_job(job);
 }
 
 static void
@@ -691,8 +589,6 @@ continue_job(Job *job)
 	bool finished = job_run_next(job);
 	if (finished)
 		remove_job(job, true);
-	else
-		determine_expensive_job(job);
 }
 
 /*-
@@ -723,7 +619,6 @@ determine_job_next_step(Job *job)
 {
 	bool okay;
 	if (job->flags & JOB_IS_EXPENSIVE) {
-		no_new_jobs = false;
 		if (DEBUG(EXPENSIVE))
 			fprintf(stderr, "[%ld] "
 			    "Returning from expensive target %s, "
@@ -743,7 +638,7 @@ remove_job(Job *job, bool okay)
 {
 	nJobs--;
 	postprocess_job(job, okay);
-	while (!no_new_jobs) {
+	while (true) {
 		if (heldJobs != NULL) {
 			job = heldJobs;
 			heldJobs = heldJobs->next;
