@@ -83,10 +83,6 @@
 #include "garray.h"
 #include "memory.h"
 
-/* what gets added each time. Kept as one static array so that it doesn't
- * get resized every time.
- */
-static struct growableArray examine;
 /* The current fringe of the graph. These are nodes which await examination by
  * MakeOODate. It is added to by Make_Update and subtracted from by
  * MakeStartJobs */
@@ -112,12 +108,6 @@ static void random_setup(void);
 
 static bool randomize_queue;
 long random_delay = 0;
-
-bool
-no_jobs_left()
-{
-	return Array_IsEmpty(&to_build);
-}
 
 static void
 random_setup()

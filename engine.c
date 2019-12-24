@@ -788,12 +788,6 @@ do_run_command(Job *job, const char *pre)
 		Punt("Could not fork");
 		/*NOTREACHED*/
 	case 0:
-		/* put a random delay unless we're the only job running
-		 * and there's nothing left to do.
-		 */
-		if (random_delay)
-			if (!(runningJobs == NULL && no_jobs_left()))
-				usleep(arc4random_uniform(random_delay));
 		run_command(cmd, errCheck);
 		/*NOTREACHED*/
 	default:
