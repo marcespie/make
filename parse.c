@@ -738,14 +738,6 @@ handle_special_targets(Lst paths)
 				specType = SPECIAL_NONE;
 			}
 			break;
-		case SPECIAL_NOTPARALLEL:
-		{
-			extern int  maxJobs;
-
-			maxJobs = 1;
-			compatMake = 1;
-			break;
-		}
 		case SPECIAL_ORDER:
 			predecessor = NULL;
 			break;

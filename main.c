@@ -77,7 +77,6 @@ static bool		noBuiltins;	/* -r flag */
 static LIST		makefiles;	/* ordered list of makefiles to read */
 static LIST		varstoprint;	/* list of variables to print */
 int			maxJobs;	/* -j argument */
-bool 		compatMake;	/* -B argument */
 static bool		forceJobs = false;
 int 		debug;		/* -d flag */
 bool 		noExecute;	/* -n flag */
@@ -130,9 +129,6 @@ static void
 posixParseOptLetter(int c)
 {
 	switch(c) {
-	case 'B':
-		compatMake = true;
-		return;	/* XXX don't pass to submakes. */
 	case 'S':
 		keepgoing = false;
 		break;
@@ -677,8 +673,6 @@ main(int argc, char **argv)
 	debug = 0;			/* No debug verbosity, please. */
 
 	maxJobs = DEFMAXJOBS;
-	compatMake = false;		/* No compat mode */
-
 
 	/*
 	 * Initialize all external modules.
@@ -716,12 +710,6 @@ main(int argc, char **argv)
 		setenv("MAKEBASEDIRECTORY", d.current, 0);
 
 	MainParseArgs(argc, argv);
-
-	/*
-	 * Be compatible if user did not specify -j
-	 */
-	if (!forceJobs)
-		compatMake = true;
 
 	/* And set up everything for sub-makes */
 	Var_AddCmdline(MAKEFLAGS);
@@ -801,14 +789,9 @@ main(int argc, char **argv)
 		 * attached to it.  */
 		if (!queryFlag)
 			Job_Begin();
-		if (compatMake)
-			/* Compat_Init will take care of creating all the
-			 * targets as well as initializing the module.  */
-			Compat_Run(&targs);
-		else {
-			/* Traverse the graph, checking on all the targets.  */
-			outOfDate = Make_Run(&targs);
-		}
+		/* Compat_Init will take care of creating all the
+		 * targets as well as initializing the module.  */
+		Compat_Run(&targs);
 	}
 
 	/* print the graph now it's been processed if the user requested it */
