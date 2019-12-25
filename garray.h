@@ -79,7 +79,7 @@ do {						\
 	unsigned int i;				\
 	for (i = 0; i < (l)->n; i++)		\
 		if ((func)((l)->a[i], (v)) == 0)\
-		    break;			\
+		    	break;			\
 } while (0)
 
 #define Array_FindP(l, func, v)				\
@@ -87,7 +87,7 @@ do {							\
 	unsigned int i;					\
 	for (i = 0; i < (l)->n; i++)			\
 		if ((func)(&((l)->a[i]), (v)) == 0)	\
-		    break;				\
+		    	break;				\
 } while (0)
 
 #define Array_ForEach(l, func, v)		\
