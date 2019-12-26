@@ -569,10 +569,10 @@ postprocess_job(Job *job)
  * is set, so jobs that would fork new processes are accumulated in the
  * heldJobs list instead.
  *
- * This heuristics is also used on error exit: we display silent commands
- * that failed, unless those ARE expensive commands: expensive commands
- * are likely to not be failing by themselves, but to be the result of
- * a cascade of failures in descendant makes.
+ * XXX This heuristics is also used on error exit: we display silent commands
+ * that failed, unless those ARE expensive commands: expensive commands are
+ * likely to not be failing by themselves, but to be the result of a cascade of
+ * failures in descendant makes.
  */
 void
 determine_expensive_job(Job *job)
