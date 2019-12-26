@@ -676,6 +676,10 @@ job_handle_status(Job *job, int status)
 			}
 			printf(", line %lu of %s", job->location->lineno, 
 			    job->location->fname);
+			/* Parallel make already determined whether
+			 * JOB_IS_EXPENSIVE, perform the computation for
+			 * sequential make to figure out whether to display the
+			 * command or not.  */
 			if ((job->flags & JOB_SILENT) && job == &myjob)
 				determine_expensive_job(job);
 			if ((job->flags & (JOB_SILENT | JOB_IS_EXPENSIVE)) 
