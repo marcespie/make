@@ -73,13 +73,12 @@ static LIST		to_create; 	/* Targets to be made */
 Lst create = &to_create;
 bool 		allPrecious;	/* .PRECIOUS given on line by itself */
 
-static bool		noBuiltins;	/* -r flag */
-static LIST		makefiles;	/* ordered list of makefiles to read */
-static LIST		varstoprint;	/* list of variables to print */
-static int		optj;	/* -j argument */
-bool 		compatMake;	/* -B argument */
-bool		sequential;
-static bool		forceJobs = false;
+static bool	noBuiltins;	/* -r flag */
+static LIST	makefiles;	/* ordered list of makefiles to read */
+static LIST	varstoprint;	/* list of variables to print */
+static int	optj;		/* -j argument */
+static bool 	compatMake;	/* -B argument */
+static bool	forceJobs = false;
 int 		debug;		/* -d flag */
 bool 		noExecute;	/* -n flag */
 bool 		keepgoing;	/* -k flag */
@@ -88,6 +87,7 @@ bool 		touchFlag;	/* -t flag */
 bool 		ignoreErrors;	/* -i flag */
 bool 		beSilent;	/* -s flag */
 bool		dumpData;	/* -p flag */
+bool		sequential;	/* determined from -B and -j */
 
 struct dirs {
 	char *current;
