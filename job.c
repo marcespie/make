@@ -128,6 +128,8 @@ static bool	no_new_jobs;	/* Mark recursive shit so we shouldn't start
 				 */
 Job *runningJobs;		/* Jobs currently running a process */
 Job *errorJobs;			/* Jobs in error at end */
+Job *completedJobs;		/* Jobs that finished */
+Job *available;			/* Pool of available jobs */
 static Job *heldJobs;		/* Jobs not running yet because of expensive */
 static pid_t mypid;		/* Used for printing debugging messages */
 
@@ -543,9 +545,12 @@ postprocess_job(Job *job)
 		 * Make_Update to update the parents. */
 		job->node->built_status = REBUILT;
 		Make_Update(job->node);
-		free(job);
-	} else if (job->exit_type != JOB_EXIT_OKAY && keepgoing)
-		free(job);
+		job->next = available;
+		available = job;
+	} else if (job->exit_type != JOB_EXIT_OKAY && keepgoing) {
+		job->next = available;
+		available = job;
+	}
 
 	if (errorJobs != NULL && aborting != ABORT_INTERRUPT)
 		aborting = ABORT_ERROR;
@@ -662,11 +667,10 @@ prepare_job(GNode *gn)
 			Job_Touch(gn);
 			return NULL;
 		} else {
-			Job *job;       	
-
-			job = emalloc(sizeof(Job));
+			Job *job = available;       	
 			if (job == NULL)
-				Punt("can't create job: out of memory");
+				Punt("no jobs available");
+			available = available->next;
 
 			job_attach_node(job, gn);
 			return job;
@@ -746,6 +750,8 @@ static void
 remove_job(Job *job)
 {
 	nJobs--;
+	job->next = completedJobs;
+	completedJobs = job;
 	postprocess_job(job);
 }
 
@@ -871,19 +877,36 @@ handle_one_job(Job *job)
 static void
 loop_handle_running_jobs()
 {
-	while (runningJobs != NULL)
+	while (runningJobs != NULL) {
 		handle_running_jobs();
+		while (completedJobs != NULL) {
+			Job *j = completedJobs;
+			completedJobs = completedJobs->next;
+			postprocess_job(j);
+		}
+	}
 }
 
 void
 Job_Init(int maxproc)
 {
+	Job *j;
+	int i;
+
 	runningJobs = NULL;
 	heldJobs = NULL;
 	errorJobs = NULL;
+	completedJobs = NULL;
+	available = NULL;
 	maxJobs = maxproc;
 	if (maxJobs == 1)
 		sequential = true;
+
+	for (i = 0; i != maxJobs; i++) {
+		j = emalloc(sizeof(Job));
+		j->next = available;
+		available = j;
+	}
 	mypid = getpid();
 
 	nJobs = 0;
