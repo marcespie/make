@@ -122,7 +122,6 @@ static int	aborting = 0;	    /* why is the make aborting? */
 #define ABORT_WAIT	3	    /* Waiting for jobs to finish */
 
 static int	maxJobs;	/* The most children we can run at once */
-static int	nJobs;		/* Number of jobs already allocated */
 static bool	no_new_jobs;	/* Mark recursive shit so we shouldn't start
 				 * something else at the same time
 				 */
@@ -716,7 +715,6 @@ Job_Make(GNode *gn)
 	job = prepare_job(gn);
 	if (!job)
 		return;
-	nJobs++;
 	may_continue_job(job);
 }
 
@@ -742,7 +740,6 @@ determine_job_next_step(Job *job)
 static void
 remove_job(Job *job)
 {
-	nJobs--;
 	job->next = completedJobs;
 	completedJobs = job;
 	postprocess_job(job);
@@ -896,8 +893,6 @@ Job_Init(int maxproc)
 	}
 	mypid = getpid();
 
-	nJobs = 0;
-
 	aborting = 0;
 	setup_all_signals();
 }
@@ -905,7 +900,7 @@ Job_Init(int maxproc)
 bool
 can_start_job(void)
 {
-	if (aborting || nJobs >= maxJobs)
+	if (aborting || available == NULL)
 		return false;
 	else
 		return true;
