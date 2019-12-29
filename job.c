@@ -902,10 +902,10 @@ Job_Init(int maxproc)
 	if (maxJobs == 1)
 		sequential = true;
 
+	j = ereallocarray(NULL, sizeof(Job), maxJobs);
 	for (i = 0; i != maxJobs; i++) {
-		j = emalloc(sizeof(Job));
-		j->next = available;
-		available = j;
+		j[i].next = available;
+		available = &j[i];
 	}
 	mypid = getpid();
 
