@@ -128,7 +128,7 @@ static bool	no_new_jobs;	/* Mark recursive shit so we shouldn't start
 Job *runningJobs;		/* Jobs currently running a process */
 Job *errorJobs;			/* Jobs in error at end */
 Job *completedJobs;		/* Jobs that finished */
-Job *available;			/* Pool of available jobs */
+Job *availableJobs;			/* Pool of available jobs */
 static Job *heldJobs;		/* Jobs not running yet because of expensive */
 static pid_t mypid;		/* Used for printing debugging messages */
 
@@ -544,11 +544,11 @@ postprocess_job(Job *job)
 		 * Make_Update to update the parents. */
 		job->node->built_status = REBUILT;
 		Make_Update(job->node);
-		job->next = available;
-		available = job;
+		job->next = availableJobs;
+		availableJobs = job;
 	} else if (job->exit_type != JOB_EXIT_OKAY && keepgoing) {
-		job->next = available;
-		available = job;
+		job->next = availableJobs;
+		availableJobs = job;
 	}
 
 	if (errorJobs != NULL && aborting != ABORT_INTERRUPT)
@@ -666,11 +666,10 @@ prepare_job(GNode *gn)
 			Job_Touch(gn);
 			return NULL;
 		} else {
-			Job *job = available;       	
-			if (job == NULL)
-				Punt("no jobs available");
-			available = available->next;
+			Job *job = availableJobs;       	
 
+			assert(job != NULL);
+			availableJobs = availableJobs->next;
 			job_attach_node(job, gn);
 			return job;
 		}
@@ -894,15 +893,15 @@ Job_Init(int maxproc)
 	heldJobs = NULL;
 	errorJobs = NULL;
 	completedJobs = NULL;
-	available = NULL;
+	availableJobs = NULL;
 	maxJobs = maxproc;
 	if (maxJobs == 1)
 		sequential = true;
 
 	j = ereallocarray(NULL, sizeof(Job), maxJobs);
 	for (i = 0; i != maxJobs; i++) {
-		j[i].next = available;
-		available = &j[i];
+		j[i].next = availableJobs;
+		availableJobs = &j[i];
 	}
 	mypid = getpid();
 
@@ -913,7 +912,7 @@ Job_Init(int maxproc)
 bool
 can_start_job(void)
 {
-	if (aborting || available == NULL)
+	if (aborting || availableJobs == NULL)
 		return false;
 	else
 		return true;

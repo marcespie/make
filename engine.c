@@ -603,8 +603,6 @@ run_command(const char *cmd, bool errCheck)
 	_exit(1);
 }
 
-static Job myjob;
-
 void
 job_attach_node(Job *job, GNode *node)
 {
@@ -702,17 +700,23 @@ job_handle_status(Job *job, int status)
 int
 run_gnode(GNode *gn)
 {
+	Job *j;
 	if (!gn || (gn->type & OP_DUMMY))
 		return NOSUCHNODE;
 
-	job_attach_node(&myjob, gn);
-	while (myjob.exit_type == JOB_EXIT_OKAY) {
-		bool finished = job_run_next(&myjob);
+	assert(availableJobs != NULL);
+	j = availableJobs;
+	availableJobs = availableJobs->next;
+	job_attach_node(j, gn);
+	while (j->exit_type == JOB_EXIT_OKAY) {
+		bool finished = job_run_next(j);
 		if (finished)
 			break;
-		handle_one_job(&myjob);
+		handle_one_job(j);
 	}
 
+	j->next = availableJobs;
+	availableJobs = j;
 	return gn->built_status;
 }
 
