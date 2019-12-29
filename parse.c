@@ -740,10 +740,9 @@ handle_special_targets(Lst paths)
 			break;
 		case SPECIAL_NOTPARALLEL:
 		{
-			extern int  maxJobs;
-
-			maxJobs = 1;
-			compatMake = 1;
+			extern int optj;
+			compatMake = true;
+			sequential = true;
 			break;
 		}
 		case SPECIAL_ORDER:

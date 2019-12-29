@@ -76,8 +76,9 @@ bool 		allPrecious;	/* .PRECIOUS given on line by itself */
 static bool		noBuiltins;	/* -r flag */
 static LIST		makefiles;	/* ordered list of makefiles to read */
 static LIST		varstoprint;	/* list of variables to print */
-int			maxJobs;	/* -j argument */
+static int		optj;	/* -j argument */
 bool 		compatMake;	/* -B argument */
+bool		sequential;
 static bool		forceJobs = false;
 int 		debug;		/* -d flag */
 bool 		noExecute;	/* -n flag */
@@ -126,12 +127,21 @@ record_option(int c, const char *arg)
 		Var_Append(MAKEFLAGS, arg);
 }
 
+void
+set_notparallel()
+{
+	compatMake = true;
+	sequential = true;
+	optj = 1;
+}
+
 static void
 posixParseOptLetter(int c)
 {
 	switch(c) {
 	case 'B':
 		compatMake = true;
+		sequential = true;
 		return;	/* XXX don't pass to submakes. */
 	case 'S':
 		keepgoing = false;
@@ -313,7 +323,7 @@ MainParseArgs(int argc, char **argv)
 			const char *errstr;
 
 			forceJobs = true;
-			maxJobs = strtonum(optarg, 1, INT_MAX, &errstr);
+			optj = strtonum(optarg, 1, INT_MAX, &errstr);
 			if (errstr != NULL) {
 				fprintf(stderr,
 				    "make: illegal argument to -j option"
@@ -676,8 +686,9 @@ main(int argc, char **argv)
 	touchFlag = false;		/* Actually update targets */
 	debug = 0;			/* No debug verbosity, please. */
 
-	maxJobs = DEFMAXJOBS;
+	optj = DEFMAXJOBS;
 	compatMake = false;		/* No compat mode */
+	sequential = false;
 
 
 	/*
@@ -720,8 +731,10 @@ main(int argc, char **argv)
 	/*
 	 * Be compatible if user did not specify -j
 	 */
-	if (!forceJobs)
+	if (!forceJobs) {
 		compatMake = true;
+		sequential = true;
+	}
 
 	/* And set up everything for sub-makes */
 	Var_AddCmdline(MAKEFLAGS);
@@ -796,7 +809,7 @@ main(int argc, char **argv)
 		else
 			Targ_FindList(&targs, create);
 
-		Job_Init(maxJobs);
+		Job_Init(optj);
 		/* If the user has defined a .BEGIN target, execute the commands
 		 * attached to it.  */
 		if (!queryFlag)

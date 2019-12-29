@@ -38,4 +38,7 @@ extern void Main_ParseArgLine(const char *);
  * .if make(...) statements. */
 extern Lst	create;
 
+/* set_notparallel(): used to influence running mode from parse.c */
+extern void set_notparallel(void);
+
 #endif

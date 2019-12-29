@@ -696,7 +696,7 @@ continue_job(Job *job)
 	bool finished = job_run_next(job);
 	if (finished)
 		remove_job(job);
-	else
+	else if (!sequential)
 		determine_expensive_job(job);
 }
 
@@ -882,6 +882,8 @@ Job_Init(int maxproc)
 	heldJobs = NULL;
 	errorJobs = NULL;
 	maxJobs = maxproc;
+	if (maxJobs == 1)
+		sequential = true;
 	mypid = getpid();
 
 	nJobs = 0;

@@ -680,7 +680,7 @@ job_handle_status(Job *job, int status)
 			 * JOB_IS_EXPENSIVE, perform the computation for
 			 * sequential make to figure out whether to display the
 			 * command or not.  */
-			if ((job->flags & JOB_SILENT) && job == &myjob)
+			if ((job->flags & JOB_SILENT) && sequential)
 				determine_expensive_job(job);
 			if ((job->flags & (JOB_SILENT | JOB_IS_EXPENSIVE)) 
 			    == JOB_SILENT)
