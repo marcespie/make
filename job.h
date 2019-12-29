@@ -100,4 +100,6 @@ extern int check_dying_signal(void);
 
 extern const char *basedirectory;
 
+extern bool	sequential;	/* True if we are running one single-job */
+
 #endif /* _JOB_H_ */
