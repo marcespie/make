@@ -739,12 +739,8 @@ handle_special_targets(Lst paths)
 			}
 			break;
 		case SPECIAL_NOTPARALLEL:
-		{
-			extern int optj;
-			compatMake = true;
-			sequential = true;
+			set_notparallel();
 			break;
-		}
 		case SPECIAL_ORDER:
 			predecessor = NULL;
 			break;

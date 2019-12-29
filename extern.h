@@ -40,7 +40,6 @@
  *	from: @(#)nonints.h	8.3 (Berkeley) 3/19/94
  */
 
-extern bool	compatMake;	/* True if we are make compatible */
 extern bool	ignoreErrors;	/* True if should ignore all errors */
 extern bool	beSilent;	/* True if should print no commands */
 extern bool	noExecute;	/* True if should execute nothing */
