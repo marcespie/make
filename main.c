@@ -87,7 +87,6 @@ bool 		touchFlag;	/* -t flag */
 bool 		ignoreErrors;	/* -i flag */
 bool 		beSilent;	/* -s flag */
 bool		dumpData;	/* -p flag */
-bool		sequential;	/* determined from -B and -j */
 
 struct dirs {
 	char *current;
@@ -131,8 +130,6 @@ void
 set_notparallel()
 {
 	compatMake = true;
-	sequential = true;
-	optj = 1;
 }
 
 static void
@@ -141,7 +138,6 @@ posixParseOptLetter(int c)
 	switch(c) {
 	case 'B':
 		compatMake = true;
-		sequential = true;
 		return;	/* XXX don't pass to submakes. */
 	case 'S':
 		keepgoing = false;
@@ -688,7 +684,6 @@ main(int argc, char **argv)
 
 	optj = DEFMAXJOBS;
 	compatMake = false;		/* No compat mode */
-	sequential = false;
 
 
 	/*
@@ -731,10 +726,8 @@ main(int argc, char **argv)
 	/*
 	 * Be compatible if user did not specify -j
 	 */
-	if (!forceJobs) {
+	if (!forceJobs)
 		compatMake = true;
-		sequential = true;
-	}
 
 	/* And set up everything for sub-makes */
 	Var_AddCmdline(MAKEFLAGS);
@@ -769,6 +762,9 @@ main(int argc, char **argv)
 	    add_dirpath(systemIncludePath, syspath);
 
 	read_all_make_rules(noBuiltins, read_depend, &makefiles, &d);
+
+	if (compatMake)
+		optj = 1;
 
 	Var_Append("MFLAGS", Var_Value(MAKEFLAGS));
 

@@ -52,6 +52,5 @@ extern bool	touchFlag;	/* true if targets should just be 'touched'
 extern bool	queryFlag;	/* true if we aren't supposed to really make
 				 * anything, just see if the targets are out-
 				 * of-date */
-extern bool	sequential;	/* True if we are running one single-job */
 
 #endif

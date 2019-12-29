@@ -121,10 +121,10 @@ static int	aborting = 0;	    /* why is the make aborting? */
 #define ABORT_INTERRUPT 2	    /* Because it was interrupted */
 #define ABORT_WAIT	3	    /* Waiting for jobs to finish */
 
-static int	maxJobs;	/* The most children we can run at once */
 static bool	no_new_jobs;	/* Mark recursive shit so we shouldn't start
 				 * something else at the same time
 				 */
+bool sequential;
 Job *runningJobs;		/* Jobs currently running a process */
 Job *errorJobs;			/* Jobs in error at end */
 Job *completedJobs;		/* Jobs that finished */
@@ -884,7 +884,7 @@ loop_handle_running_jobs()
 }
 
 void
-Job_Init(int maxproc)
+Job_Init(int maxJobs)
 {
 	Job *j;
 	int i;
@@ -894,9 +894,7 @@ Job_Init(int maxproc)
 	errorJobs = NULL;
 	completedJobs = NULL;
 	availableJobs = NULL;
-	maxJobs = maxproc;
-	if (maxJobs == 1)
-		sequential = true;
+	sequential = maxJobs == 1;
 
 	j = ereallocarray(NULL, sizeof(Job), maxJobs);
 	for (i = 0; i != maxJobs; i++) {
