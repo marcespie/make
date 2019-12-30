@@ -693,7 +693,7 @@ may_continue_job(Job *job)
 }
 
 static void
-continue_heldback_jobs()
+may_continue_heldback_jobs()
 {
 	while (!no_new_jobs) {
 		if (heldJobs != NULL) {
@@ -794,7 +794,7 @@ reap_jobs(void)
 			determine_job_next_step(job);
 		}
 	}
-	continue_heldback_jobs();
+	may_continue_heldback_jobs();
 	/* sanity check, should not happen */
 	if (pid == -1 && errno == ECHILD && runningJobs != NULL)
 		Punt("Process has no children, but runningJobs is not empty ?");
