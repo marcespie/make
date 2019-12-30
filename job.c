@@ -793,8 +793,8 @@ reap_jobs(void)
 			handle_job_status(job, status);
 			determine_job_next_step(job);
 		}
+		may_continue_heldback_jobs();
 	}
-	may_continue_heldback_jobs();
 	/* sanity check, should not happen */
 	if (pid == -1 && errno == ECHILD && runningJobs != NULL)
 		Punt("Process has no children, but runningJobs is not empty ?");
