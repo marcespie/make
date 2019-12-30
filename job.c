@@ -531,6 +531,8 @@ debug_kill_printf(const char *fmt, ...)
 static void
 postprocess_job(Job *job)
 {
+	job->next = availableJobs;
+	availableJobs = job;
 	if (job->exit_type == JOB_EXIT_OKAY &&
 	    aborting != ABORT_ERROR &&
 	    aborting != ABORT_INTERRUPT) {
@@ -539,8 +541,6 @@ postprocess_job(Job *job)
 		 * Make_Update to update the parents. */
 		job->node->built_status = REBUILT;
 		Make_Update(job->node);
-		job->next = availableJobs;
-		availableJobs = job;
 	}
 
 	if (errorJobs != NULL && !keepgoing &&
@@ -739,8 +739,6 @@ determine_job_next_step(Job *job)
 static void
 remove_job(Job *job)
 {
-	job->next = completedJobs;
-	completedJobs = job;
 	postprocess_job(job);
 	while (!no_new_jobs) {
 		if (heldJobs != NULL) {
@@ -860,14 +858,8 @@ handle_one_job(Job *job)
 static void
 loop_handle_running_jobs()
 {
-	while (runningJobs != NULL) {
+	while (runningJobs != NULL)
 		handle_running_jobs();
-		while (completedJobs != NULL) {
-			Job *j = completedJobs;
-			completedJobs = completedJobs->next;
-			postprocess_job(j);
-		}
-	}
 }
 
 void
