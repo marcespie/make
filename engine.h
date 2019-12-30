@@ -132,10 +132,10 @@ extern void job_attach_node(Job *, GNode *);
  */
 extern bool job_run_next(Job *);
 
-/* job_handle_status(job, waitstatus):
+/* handle_job_status(job, waitstatus):
  *	process a wait return value corresponding to a job, display
  *	messages and set job status accordingly.
  */
-extern void job_handle_status(Job *, int);
+extern void handle_job_status(Job *, int);
 
 #endif

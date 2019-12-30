@@ -615,7 +615,7 @@ job_attach_node(Job *job, GNode *node)
 }
 
 void
-job_handle_status(Job *job, int status)
+handle_job_status(Job *job, int status)
 {
 	bool silent;
 	int dying;
