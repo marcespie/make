@@ -144,7 +144,6 @@ static void handle_siginfo(void);
 static void postprocess_job(Job *);
 static Job *prepare_job(GNode *);
 static void determine_job_next_step(Job *);
-static void remove_job(Job *);
 static void may_continue_job(Job *);
 static void continue_job(Job *);
 static Job *reap_finished_job(pid_t);
@@ -694,7 +693,7 @@ continue_job(Job *job)
 {
 	bool finished = job_run_next(job);
 	if (finished)
-		remove_job(job);
+		postprocess_job(job);
 	else if (!sequential)
 		determine_expensive_job(job);
 }
@@ -735,18 +734,17 @@ determine_job_next_step(Job *job)
 	}
 
 	if (job->exit_type != JOB_EXIT_OKAY || job->next_cmd == NULL)
-		remove_job(job);
+		postprocess_job(job);
 	else
 		may_continue_job(job);
 }
 
 static void
-remove_job(Job *job)
+continue_heldback_jobs()
 {
-	postprocess_job(job);
 	while (!no_new_jobs) {
 		if (heldJobs != NULL) {
-			job = heldJobs;
+			Job *job = heldJobs;
 			heldJobs = heldJobs->next;
 			if (DEBUG(EXPENSIVE))
 				fprintf(stderr, "[%ld] cheap -> release %s\n",
@@ -802,6 +800,7 @@ reap_jobs(void)
 			determine_job_next_step(job);
 		}
 	}
+	continue_heldback_jobs();
 	/* sanity check, should not happen */
 	if (pid == -1 && errno == ECHILD && runningJobs != NULL)
 		Punt("Process has no children, but runningJobs is not empty ?");
