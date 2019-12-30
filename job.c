@@ -798,7 +798,7 @@ reap_jobs(void)
 		if (job == NULL) {
 			Punt("Child (%ld) not in table?", (long)pid);
 		} else {
-			job_handle_status(job, status);
+			handle_job_status(job, status);
 			determine_job_next_step(job);
 		}
 	}
@@ -855,7 +855,7 @@ handle_one_job(Job *job)
 		sigsuspend(&emptyset);
 	}
 	runningJobs = NULL;
-	job_handle_status(job, status);
+	handle_job_status(job, status);
 	sigprocmask(SIG_SETMASK, &old, NULL);
 }
 
