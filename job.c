@@ -127,10 +127,10 @@ static bool	no_new_jobs;	/* Mark recursive shit so we shouldn't start
 bool sequential;
 Job *runningJobs;		/* Jobs currently running a process */
 Job *errorJobs;			/* Jobs in error at end */
-Job *completedJobs;		/* Jobs that finished */
-Job *availableJobs;			/* Pool of available jobs */
+Job *availableJobs;		/* Pool of available jobs */
 static Job *heldJobs;		/* Jobs not running yet because of expensive */
 static pid_t mypid;		/* Used for printing debugging messages */
+static Job *extra_job;		/* Needed for .INTERRUPT */
 
 static volatile sig_atomic_t got_fatal;
 
@@ -531,11 +531,11 @@ debug_kill_printf(const char *fmt, ...)
 static void
 postprocess_job(Job *job)
 {
-	job->next = availableJobs;
-	availableJobs = job;
 	if (job->exit_type == JOB_EXIT_OKAY &&
 	    aborting != ABORT_ERROR &&
 	    aborting != ABORT_INTERRUPT) {
+		job->next = availableJobs;
+		availableJobs = job;
 		/* As long as we aren't aborting and the job didn't return a
 		 * non-zero status that we shouldn't ignore, we call
 		 * Make_Update to update the parents. */
@@ -871,15 +871,17 @@ Job_Init(int maxJobs)
 	runningJobs = NULL;
 	heldJobs = NULL;
 	errorJobs = NULL;
-	completedJobs = NULL;
 	availableJobs = NULL;
 	sequential = maxJobs == 1;
 
-	j = ereallocarray(NULL, sizeof(Job), maxJobs);
+	/* we allocate n+1 jobs, since we may need an extra job for
+	 * running .INTERRUPT.  */
+	j = ereallocarray(NULL, sizeof(Job), maxJobs+1);
 	for (i = 0; i != maxJobs; i++) {
 		j[i].next = availableJobs;
 		availableJobs = &j[i];
 	}
+	extra_job = &j[maxJobs];
 	mypid = getpid();
 
 	aborting = 0;
@@ -929,7 +931,8 @@ handle_fatal_signal(int signo)
 	if (signo == SIGINT && !touchFlag) {
 		if ((interrupt_node->type & OP_DUMMY) == 0) {
 			ignoreErrors = false;
-
+			extra_job->next = availableJobs;
+			availableJobs = extra_job;
 			Job_Make(interrupt_node);
 		}
 	}
