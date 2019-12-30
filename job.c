@@ -746,8 +746,6 @@ determine_job_next_step(Job *job)
 static void
 remove_job(Job *job)
 {
-	job->next = completedJobs;
-	completedJobs = job;
 	postprocess_job(job);
 }
 
@@ -873,14 +871,8 @@ handle_one_job(Job *job)
 static void
 loop_handle_running_jobs()
 {
-	while (runningJobs != NULL) {
+	while (runningJobs != NULL)
 		handle_running_jobs();
-		while (completedJobs != NULL) {
-			Job *j = completedJobs;
-			completedJobs = completedJobs->next;
-			postprocess_job(j);
-		}
-	}
 }
 
 void
