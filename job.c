@@ -955,6 +955,7 @@ handle_fatal_signal(int signo)
  *	return true if fatal errors have happened.
  *-----------------------------------------------------------------------
  */
+/* TODO NetBSD's bmake allows special nodes to have dependencies */
 bool
 Job_Finish(void)
 {
