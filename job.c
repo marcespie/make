@@ -145,7 +145,6 @@ static void postprocess_job(Job *);
 static Job *prepare_job(GNode *);
 static void determine_job_next_step(Job *);
 static void may_continue_job(Job *);
-static void continue_job(Job *);
 static Job *reap_finished_job(pid_t);
 static bool reap_jobs(void);
 
@@ -684,18 +683,29 @@ may_continue_job(Job *job)
 			    (long)mypid, job->node->name);
 		job->next = heldJobs;
 		heldJobs = job;
-	} else
-		continue_job(job);
+	} else {
+		bool finished = job_run_next(job);
+		if (finished)
+			postprocess_job(job);
+		else if (!sequential)
+			determine_expensive_job(job);
+	}
 }
 
 static void
-continue_job(Job *job)
+continue_heldback_jobs()
 {
-	bool finished = job_run_next(job);
-	if (finished)
-		postprocess_job(job);
-	else if (!sequential)
-		determine_expensive_job(job);
+	while (!no_new_jobs) {
+		if (heldJobs != NULL) {
+			Job *job = heldJobs;
+			heldJobs = heldJobs->next;
+			if (DEBUG(EXPENSIVE))
+				fprintf(stderr, "[%ld] cheap -> release %s\n",
+				    (long)mypid, job->node->name);
+			may_continue_job(job);
+		} else
+			break;
+	}
 }
 
 /*-
@@ -737,22 +747,6 @@ determine_job_next_step(Job *job)
 		postprocess_job(job);
 	else
 		may_continue_job(job);
-}
-
-static void
-continue_heldback_jobs()
-{
-	while (!no_new_jobs) {
-		if (heldJobs != NULL) {
-			Job *job = heldJobs;
-			heldJobs = heldJobs->next;
-			if (DEBUG(EXPENSIVE))
-				fprintf(stderr, "[%ld] cheap -> release %s\n",
-				    (long)mypid, job->node->name);
-			continue_job(job);
-		} else
-			break;
-	}
 }
 
 /*
