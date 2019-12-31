@@ -119,7 +119,7 @@ static bool randomize_queue;
 long random_delay = 0;
 
 bool
-no_jobs_left()
+nothing_left_to_build()
 {
 	return Array_IsEmpty(&to_build);
 }

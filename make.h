@@ -43,6 +43,6 @@
 extern void Make_Update(GNode *);
 extern bool Make_Run(Lst);
 extern long random_delay;
-extern bool no_jobs_left(void);
+extern bool nothing_left_to_build(void);
 
 #endif /* _MAKE_H_ */
