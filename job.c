@@ -543,6 +543,9 @@ postprocess_job(Job *job)
 		 * Make_Update to update the parents. */
 		job->node->built_status = REBUILT;
 		Make_Update(job->node);
+	} else if (job->exit_type != JOB_EXIT_OKAY && keepgoing) {
+		job->next = availableJobs;
+		availableJobs = job;
 	}
 
 	if (errorJobs != NULL && !keepgoing &&
