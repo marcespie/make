@@ -803,7 +803,7 @@ do_run_command(Job *job, const char *pre)
 		 * and there's nothing left to do.
 		 */
 		if (random_delay)
-			if (!(runningJobs == NULL && no_jobs_left()))
+			if (!(runningJobs == NULL && nothing_left_to_build()))
 				usleep(arc4random_uniform(random_delay));
 		run_command(cmd, errCheck);
 		/*NOTREACHED*/
