@@ -667,8 +667,7 @@ handle_job_status(Job *job, int status)
 			if (!keepgoing) {
 				if (!silent)
 					printf("\n");
-				job->next = errorJobs;
-				errorJobs = job;
+				job->flags |= JOB_KEEPERROR;
 				/* XXX don't free the command */
 				return;
 			}
@@ -715,8 +714,13 @@ run_gnode(GNode *gn)
 		handle_one_job(j);
 	}
 
-	j->next = availableJobs;
-	availableJobs = j;
+	if (j->flags & JOB_KEEPERROR) {
+		j->next = errorJobs;
+		errorJobs = j;
+	} else {
+		j->next = availableJobs;
+		availableJobs = j;
+	}
 	return gn->built_status;
 }
 

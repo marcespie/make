@@ -113,6 +113,7 @@ struct Job_ {
 #define JOB_IS_EXPENSIVE 	0x002
 #define JOB_LOST		0x004	/* sent signal to non-existing pid ? */
 #define JOB_ERRCHECK		0x008	/* command wants errcheck */
+#define JOB_KEEPERROR		0x010	/* should place job on error list */
 	LstNode		next_cmd;	/* Next command to run */
 	char		*cmd;		/* Last command run */
 	GNode		*node;	    	/* Target of this job */
