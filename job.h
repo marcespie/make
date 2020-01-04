@@ -95,6 +95,7 @@ extern void handle_all_signals(void);
 extern void determine_expensive_job(Job *);
 extern Job *runningJobs, *errorJobs, *availableJobs;
 extern void debug_job_printf(const char *, ...);
+extern void handle_one_job(Job *);
 extern int check_dying_signal(void);
 
 extern const char *basedirectory;
