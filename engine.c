@@ -699,28 +699,11 @@ handle_job_status(Job *job, int status)
 int
 run_gnode(GNode *gn)
 {
-	Job *j;
 	if (!gn || (gn->type & OP_DUMMY))
 		return NOSUCHNODE;
 
-	assert(availableJobs != NULL);
-	j = availableJobs;
-	availableJobs = availableJobs->next;
-	job_attach_node(j, gn);
-	while (j->exit_type == JOB_EXIT_OKAY) {
-		bool finished = job_run_next(j);
-		if (finished)
-			break;
-		handle_one_job(j);
-	}
-
-	if (j->flags & JOB_KEEPERROR) {
-		j->next = errorJobs;
-		errorJobs = j;
-	} else {
-		j->next = availableJobs;
-		availableJobs = j;
-	}
+	Job_Make(gn);
+	handle_running_jobs();
 	return gn->built_status;
 }
 
