@@ -805,7 +805,7 @@ main(int argc, char **argv)
 		else
 			Targ_FindList(&targs, create);
 
-		Job_Init(optj);
+		Job_Init(optj, compatMake);
 		/* If the user has defined a .BEGIN target, execute the commands
 		 * attached to it.  */
 		if (!queryFlag)
