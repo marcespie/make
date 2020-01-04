@@ -545,8 +545,7 @@ postprocess_job(Job *job)
 		free(job);
 	}
 
-	if (errorJobs != NULL && !keepgoing &&
-	    aborting != ABORT_INTERRUPT)
+	if (errorJobs != NULL && aborting != ABORT_INTERRUPT)
 		aborting = ABORT_ERROR;
 
 	if (aborting == ABORT_ERROR && DEBUG(QUICKDEATH))
