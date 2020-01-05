@@ -143,7 +143,6 @@ static sigset_t sigset, emptyset;
 static void handle_fatal_signal(int);
 static void handle_siginfo(void);
 static void postprocess_job(Job *);
-static Job *prepare_job(GNode *);
 static void determine_job_next_step(Job *);
 static void may_continue_job(Job *);
 static Job *reap_finished_job(pid_t);
@@ -652,33 +651,6 @@ expensive_command(const char *s)
 	return false;
 }
 
-static Job *
-prepare_job(GNode *gn)
-{
-	/* a new job is prepared unless its commands are bogus (we don't
-	 * have anything for it), or if we're in touch mode.
-	 *
-	 * Note that even in noexec mode, some commands may still run
-	 * thanks to the +cmd construct.
-	 */
-	if (node_find_valid_commands(gn)) {
-		if (touchFlag) {
-			Job_Touch(gn);
-			return NULL;
-		} else {
-			Job *job = availableJobs;       	
-
-			assert(job != NULL);
-			availableJobs = availableJobs->next;
-			job_attach_node(job, gn);
-			return job;
-		}
-	} else {
-		node_failure(gn);
-		return NULL;
-	}
-}
-
 static void
 may_continue_job(Job *job)
 {
@@ -727,11 +699,11 @@ may_continue_heldback_jobs()
 void
 Job_Make(GNode *gn)
 {
-	Job *job;
+	Job *job = availableJobs;       	
 
-	job = prepare_job(gn);
-	if (!job)
-		return;
+	assert(job != NULL);
+	availableJobs = availableJobs->next;
+	job_attach_node(job, gn);
 	may_continue_job(job);
 }
 

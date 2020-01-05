@@ -377,7 +377,13 @@ try_to_make_node(GNode *gn)
 			return true;
 		/* SIB: this is where commands should get prepared */
 		Make_DoAllVar(gn);
-		Job_Make(gn);
+		if (node_find_valid_commands(gn)) {
+			if (touchFlag)
+				Job_Touch(gn);
+			else 
+				Job_Make(gn);
+		} else
+			node_failure(gn);
 	} else {
 		if (DEBUG(MAKE))
 			printf("up-to-date\n");
