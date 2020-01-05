@@ -572,7 +572,8 @@ Make_Run(Lst targs)		/* the initial list of targets */
 		(void)MakeStartJobs();
 	}
 
-	problem = Job_Finish();
+	if (!queryFlag)
+		problem = Job_Finish();
 
 	/*
 	 * Print the final status of each target. E.g. if it wasn't made
