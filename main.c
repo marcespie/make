@@ -807,13 +807,9 @@ main(int argc, char **argv)
 
 		Job_Init(optj, compatMake);
 		if (compatMake)
-			/* Compat_Init will take care of creating all the
-			 * targets as well as initializing the module.  */
-			outOfDate =Compat_Run(&targs);
-		else {
-			/* Traverse the graph, checking on all the targets.  */
+			outOfDate = Compat_Run(&targs);
+		else
 			outOfDate = Make_Run(&targs);
-		}
 	}
 
 	/* print the graph now it's been processed if the user requested it */
