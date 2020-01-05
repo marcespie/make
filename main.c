@@ -809,7 +809,7 @@ main(int argc, char **argv)
 		if (compatMake)
 			/* Compat_Init will take care of creating all the
 			 * targets as well as initializing the module.  */
-			Compat_Run(&targs);
+			outOfDate =Compat_Run(&targs);
 		else {
 			/* Traverse the graph, checking on all the targets.  */
 			outOfDate = Make_Run(&targs);

@@ -35,8 +35,9 @@
  *	    - friendly variable substitution.
  */
 
-/* Compat_Run(to_create);
- *	Run the actual make engine, to create targets that need to.  */
-extern void Compat_Run(Lst);
+/* out_of_date = Compat_Run(to_create);
+ *	Run the actual make engine, to create targets that need to,
+ *	return true if any target is out of date. */
+extern bool Compat_Run(Lst);
 
 #endif
