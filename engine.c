@@ -703,7 +703,7 @@ run_gnode(GNode *gn)
 		return NOSUCHNODE;
 
 	Job_Make(gn);
-	handle_running_jobs();
+	loop_handle_running_jobs();
 	return gn->built_status;
 }
 
