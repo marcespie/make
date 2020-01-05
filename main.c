@@ -806,10 +806,6 @@ main(int argc, char **argv)
 			Targ_FindList(&targs, create);
 
 		Job_Init(optj, compatMake);
-		/* If the user has defined a .BEGIN target, execute the commands
-		 * attached to it.  */
-		if (!queryFlag)
-			Job_Begin();
 		if (compatMake)
 			/* Compat_Init will take care of creating all the
 			 * targets as well as initializing the module.  */

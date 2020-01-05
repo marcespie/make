@@ -537,6 +537,10 @@ Make_Run(Lst targs)		/* the initial list of targets */
 {
 	bool problem;	/* errors occurred */
 
+	/* If the user has defined a .BEGIN target, execute the commands
+	 * attached to it.  */
+	if (!queryFlag)
+		Job_Begin();
 	/* wild guess at initial sizes */
 	Array_Init(&to_build, 500);
 	Array_Init(&examine, 150);
