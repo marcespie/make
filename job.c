@@ -724,7 +724,6 @@ Job_Make(GNode *gn)
 static void
 determine_job_next_step(Job *job)
 {
-	bool okay;
 	if (job->flags & JOB_IS_EXPENSIVE) {
 		no_new_jobs = false;
 		if (DEBUG(EXPENSIVE))
