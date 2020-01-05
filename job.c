@@ -150,7 +150,6 @@ static Job *reap_finished_job(pid_t);
 static bool reap_jobs(void);
 static void may_continue_heldback_jobs();
 
-static void loop_handle_running_jobs(void);
 static bool expensive_job(Job *);
 static bool expensive_command(const char *);
 static void setup_signal(int);
@@ -839,26 +838,6 @@ handle_running_jobs(void)
 }
 
 void
-handle_one_job(Job *job)
-{
-	int stat;
-	int status;
-	sigset_t old;
-
-	sigprocmask(SIG_BLOCK, &sigset, &old);
-	while (1) {
-		handle_all_signals();
-		stat = waitpid(job->pid, &status, WNOHANG);
-		if (stat == job->pid)
-			break;
-		sigsuspend(&emptyset);
-	}
-	runningJobs = NULL;
-	handle_job_status(job, status);
-	sigprocmask(SIG_SETMASK, &old, NULL);
-}
-
-static void
 loop_handle_running_jobs()
 {
 	while (runningJobs != NULL)

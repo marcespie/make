@@ -84,6 +84,10 @@ extern void print_errors(void);
  *	or a signal coming in.
  */
 extern void handle_running_jobs(void);
+/* loop_handle_running_jobs();
+ *	handle running jobs until they're finished.
+ */
+extern void loop_handle_running_jobs(void);
 
 /* handle_all_signals();
  *	if a signal was received, react accordingly.
