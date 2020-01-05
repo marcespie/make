@@ -281,6 +281,10 @@ Compat_Run(Lst targs)		/* List of target nodes to re-create */
 	 *                          dependencies could not be built due 
 	 *		      	    to errors.  */
 	errors = 0;
+	/* If the user has defined a .BEGIN target, execute the commands
+	 * attached to it.  */
+	if (!queryFlag)
+		Job_Begin();
 	while ((gn = Lst_DeQueue(targs)) != NULL) {
 		CompatMake(gn, NULL);
 
