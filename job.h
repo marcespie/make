@@ -65,13 +65,13 @@ extern bool can_start_job(void);
  */
 extern bool Job_Empty(void);
 
-/* errors = Job_Finish();
- *	final processing including running .END target if no errors.
+/* Job_End();
+ *	run .END target at end.
  */
-extern bool Job_Finish(void);
+extern void Job_End(void);
 
 /* Job_Begin();
- *	similarly, run .BEGIN job at start of job.
+ *	similarly, run .BEGIN job at start.
  */
 extern void Job_Begin(void);
 

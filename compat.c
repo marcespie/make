@@ -264,12 +264,12 @@ CompatMake(void *gnp,	/* The node to make */
 	}
 }
 
-bool
-Compat_Run(Lst targs)		/* List of target nodes to re-create */
+void
+Compat_Run(Lst targs, bool *has_errors, bool *out_of_date)
 {
 	GNode	  *gn = NULL;	/* Current root target */
-	int 	  errors;   	/* Number of targets not built due to errors */
-	bool 	out_of_date = false;
+	*out_of_date = false;
+	*has_errors = false;
 
 	/* For each entry in the list of targets to create, call CompatMake on
 	 * it to create the thing. CompatMake will leave the 'built_status'
@@ -281,7 +281,6 @@ Compat_Run(Lst targs)		/* List of target nodes to re-create */
 	 *	    ABORTED	    gn was not built because one of its
 	 *                          dependencies could not be built due 
 	 *		      	    to errors.  */
-	errors = 0;
 	/* If the user has defined a .BEGIN target, execute the commands
 	 * attached to it.  */
 	if (!queryFlag)
@@ -294,15 +293,14 @@ Compat_Run(Lst targs)		/* List of target nodes to re-create */
 		else if (gn->built_status == ABORTED) {
 			printf("`%s' not remade because of errors.\n",
 			    gn->name);
-			out_of_date = true;
-			errors++;
+			*out_of_date = true;
+			*has_errors = true;
 		} else {
-			out_of_date = true;
+			*out_of_date = true;
 		}
 	}
 
 	/* If the user has defined a .END target, run its commands.  */
-	if (errors == 0 && !queryFlag)
+	if (!*has_errors && !queryFlag)
 		run_gnode(end_node);
-	return out_of_date;
 }
