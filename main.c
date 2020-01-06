@@ -629,6 +629,14 @@ read_all_make_rules(bool noBuiltins, bool read_depend,
 	Parse_End();
 }
 
+static void
+run_list(Lst t, bool *has_errors, bool *out_of_date)
+{
+	if (compatMake)
+		Compat_Run(t, has_errors, out_of_date);
+	else
+		Make_Run(t, has_errors, out_of_date);
+}
 
 int main(int, char **);
 /*-
@@ -653,6 +661,7 @@ main(int argc, char **argv)
 {
 	static LIST targs;	/* target nodes to create */
 	bool outOfDate = true;	/* false if all targets up to date */
+	bool errored = false;	/* true if errors occurred */
 	char *machine = figure_out_MACHINE();
 	char *machine_arch = figure_out_MACHINE_ARCH();
 	char *machine_cpu = figure_out_MACHINE_CPU();
@@ -806,15 +815,15 @@ main(int argc, char **argv)
 			Targ_FindList(&targs, create);
 
 		Job_Init(optj, compatMake);
-		if (compatMake)
-			outOfDate = Compat_Run(&targs);
-		else
-			outOfDate = Make_Run(&targs);
+		run_list(&targs, &errored, &outOfDate);
 	}
 
 	/* print the graph now it's been processed if the user requested it */
 	if (DEBUG(GRAPH2))
 		post_mortem();
+
+	if (errored)
+		Fatal("Errors while building");
 
 	if (queryFlag && outOfDate)
 		return 1;

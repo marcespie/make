@@ -35,9 +35,9 @@
  *	    - friendly variable substitution.
  */
 
-/* out_of_date = Compat_Run(to_create);
+/* Compat_Run(to_create, &has_errors, &out_of_date);
  *	Run the actual make engine, to create targets that need to,
- *	return true if any target is out of date. */
-extern bool Compat_Run(Lst);
+ *	return info about what we did. */
+extern void Compat_Run(Lst, bool *, bool *);
 
 #endif

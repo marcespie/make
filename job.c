@@ -905,28 +905,18 @@ handle_fatal_signal(int signo)
 
 /*
  *-----------------------------------------------------------------------
- * Job_Finish --
+ * Job_End --
  *	Do final processing such as the running of the commands
  *	attached to the .END target.
- *
- *	return true if fatal errors have happened.
  *-----------------------------------------------------------------------
  */
-/* TODO NetBSD's bmake allows special nodes to have dependencies */
-bool
-Job_Finish(void)
+void
+Job_End(void)
 {
-	bool problem = errorJobs != NULL;
-
 	if ((end_node->type & OP_DUMMY) == 0) {
-		if (problem) {
-			Error("Errors reported so .END ignored");
-		} else {
-			Job_Make(end_node);
-			loop_handle_running_jobs();
-		}
+		Job_Make(end_node);
+		loop_handle_running_jobs();
 	}
-	return problem;
 }
 
 void
