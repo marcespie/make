@@ -824,6 +824,8 @@ main(int argc, char **argv)
 	if (DEBUG(GRAPH2))
 		post_mortem();
 
+	/* Note that we only hit this code if -k is used, otherwise we
+	 * exited early in case of errors. */
 	if (errored)
 		Fatal("Errors while building");
 
