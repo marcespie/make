@@ -646,6 +646,7 @@ run_node(GNode *gn, bool *has_errors, bool *out_of_date)
 	Lst_Init(&l);
 	Lst_AtEnd(&l, gn);
 	run_list(&l, has_errors, out_of_date);
+	Lst_Destroy(&l, NOFREE);
 }
 
 int main(int, char **);
