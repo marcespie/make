@@ -638,29 +638,23 @@ run_list(Lst t, bool *has_errors, bool *out_of_date)
 		Make_Run(t, has_errors, out_of_date);
 }
 
+static void
+run_node(GNode *gn, bool *has_errors, bool *out_of_date)
+{
+	LIST l;
+
+	Lst_Init(&l);
+	Lst_AtEnd(&l, gn);
+	run_list(&l, has_errors, out_of_date);
+}
+
 int main(int, char **);
-/*-
- * main --
- *	The main function, for obvious reasons. Initializes variables
- *	and a few modules, then parses the arguments give it in the
- *	environment and on the command line. Reads the system makefile
- *	followed by either Makefile, makefile or the file given by the
- *	-f argument. Sets the .MAKEFLAGS PMake variable based on all the
- *	flags it has received by then uses either the Make or the Compat
- *	module to create the initial list of targets.
- *
- * Results:
- *	If -q was given, exits -1 if anything was out-of-date. Else it exits
- *	0.
- *
- * Side Effects:
- *	The program exits when done. Targets are created. etc. etc. etc.
- */
+
 int
 main(int argc, char **argv)
 {
 	static LIST targs;	/* target nodes to create */
-	bool outOfDate = true;	/* false if all targets up to date */
+	bool outOfDate = false;	/* false if all targets up to date */
 	bool errored = false;	/* true if errors occurred */
 	char *machine = figure_out_MACHINE();
 	char *machine_arch = figure_out_MACHINE_ARCH();
@@ -680,6 +674,7 @@ main(int argc, char **argv)
 	Static_Lst_Init(&makefiles);
 	Static_Lst_Init(&varstoprint);
 	Static_Lst_Init(&targs);
+	Static_Lst_Init(&special);
 
 	beSilent = false;		/* Print commands as executed */
 	ignoreErrors = false;		/* Pay attention to non-zero returns */
@@ -815,7 +810,14 @@ main(int argc, char **argv)
 			Targ_FindList(&targs, create);
 
 		Job_Init(optj, compatMake);
-		run_list(&targs, &errored, &outOfDate);
+		if (!queryFlag && node_is_real(begin_node))
+			run_node(begin_node, &errored, &outOfDate);
+
+		if (!errored)
+			run_list(&targs, &errored, &outOfDate);
+
+		if (!queryFlag && !errored && node_is_real(end_node))
+			run_node(end_node, &errored, &outOfDate);
 	}
 
 	/* print the graph now it's been processed if the user requested it */

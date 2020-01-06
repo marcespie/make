@@ -57,6 +57,7 @@ extern bool Targ_Precious(GNode *);
 extern void Targ_PrintCmd(void *);
 extern void Targ_PrintType(int);
 extern void Targ_PrintGraph(int);
+extern bool node_is_real(GNode *);
 
 extern GNode *begin_node, *end_node, *interrupt_node, *DEFAULT;
 struct ohash_info;
