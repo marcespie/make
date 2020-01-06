@@ -533,10 +533,6 @@ void
 Make_Run(Lst targs, bool *has_errors, bool *out_of_date)
 {
 	static bool first = true;
-	/* If the user has defined a .BEGIN target, execute the commands
-	 * attached to it.  */
-	if (!queryFlag)
-		Job_Begin();
 
 	if (first) {
 		/* wild guess at initial sizes */
@@ -556,7 +552,8 @@ Make_Run(Lst targs, bool *has_errors, bool *out_of_date)
 		 * the next loop... (we won't actually start any, of course,
 		 * this is just to see if any of the targets was out of date)
 		 */
-		*out_of_date =  MakeStartJobs();
+		if (MakeStartJobs())
+			*out_of_date = true;
 	} else {
 		/*
 		 * Initialization. At the moment, no jobs are running and until
@@ -583,9 +580,8 @@ Make_Run(Lst targs, bool *has_errors, bool *out_of_date)
 		(void)MakeStartJobs();
 	}
 
-	*has_errors = errorJobs != NULL;
-	if (!queryFlag && !*has_errors)
-		Job_End();
+	if (errorJobs != NULL)
+		*has_errors = true;
 
 	/*
 	 * Print the final status of each target. E.g. if it wasn't made
@@ -596,8 +592,6 @@ Make_Run(Lst targs, bool *has_errors, bool *out_of_date)
 		*has_errors = true;
 	}
 	Lst_Every(targs, MakePrintStatus);
-	if (*has_errors)
-		Fatal("Errors while building");
 }
 
 /* round-about detection: assume make is bug-free, if there are targets

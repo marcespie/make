@@ -268,8 +268,6 @@ void
 Compat_Run(Lst targs, bool *has_errors, bool *out_of_date)
 {
 	GNode	  *gn = NULL;	/* Current root target */
-	*out_of_date = false;
-	*has_errors = false;
 
 	/* For each entry in the list of targets to create, call CompatMake on
 	 * it to create the thing. CompatMake will leave the 'built_status'
@@ -281,10 +279,6 @@ Compat_Run(Lst targs, bool *has_errors, bool *out_of_date)
 	 *	    ABORTED	    gn was not built because one of its
 	 *                          dependencies could not be built due 
 	 *		      	    to errors.  */
-	/* If the user has defined a .BEGIN target, execute the commands
-	 * attached to it.  */
-	if (!queryFlag)
-		Job_Begin();
 	while ((gn = Lst_DeQueue(targs)) != NULL) {
 		CompatMake(gn, NULL);
 
@@ -299,8 +293,4 @@ Compat_Run(Lst targs, bool *has_errors, bool *out_of_date)
 			*out_of_date = true;
 		}
 	}
-
-	/* If the user has defined a .END target, run its commands.  */
-	if (!*has_errors && !queryFlag)
-		run_gnode(end_node);
 }

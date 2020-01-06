@@ -70,18 +70,10 @@
  *
  *	Job_Init		Called to initialize this module. 
  *
- *	Job_Begin		execute commands attached to the .BEGIN target
- *				if any.
- *
  *	can_start_job		Return true if we can start job
  *
  *	Job_Empty		Return true if the job table is completely
  *				empty.
- *
- *	Job_Finish		Perform any final processing which needs doing.
- *				This includes the execution of any commands
- *				which have been/were attached to the .END
- *				target. 
  *
  *	Job_AbortAll		Abort all current jobs. It doesn't
  *				handle output or do anything for the jobs,
@@ -902,31 +894,6 @@ handle_fatal_signal(int signo)
 	/*NOTREACHED*/
 	fprintf(stderr, "This should never happen\n");
 	exit(1);
-}
-
-/*
- *-----------------------------------------------------------------------
- * Job_End --
- *	Do final processing such as the running of the commands
- *	attached to the .END target.
- *-----------------------------------------------------------------------
- */
-void
-Job_End(void)
-{
-	if ((end_node->type & OP_DUMMY) == 0) {
-		Job_Make(end_node);
-		loop_handle_running_jobs();
-	}
-}
-
-void
-Job_Begin(void)
-{
-	if ((begin_node->type & OP_DUMMY) == 0) {
-		Job_Make(begin_node);
-		loop_handle_running_jobs();
-	}
 }
 
 /*-

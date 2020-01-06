@@ -277,6 +277,12 @@ Targ_Precious(GNode *gn)
 		return false;
 }
 
+bool
+node_is_real(GNode *gn)
+{
+	return (gn->type & OP_DUMMY) == 0;
+}
+
 void
 Targ_PrintCmd(void *p)
 {
