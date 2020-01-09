@@ -105,8 +105,8 @@
 #include "lst.h"
 #include "gnode.h"
 #include "memory.h"
-#include "make.h"
 #include "buf.h"
+#include "enginechoice.h"
 
 static int	aborting = 0;	    /* why is the make aborting? */
 #define ABORT_ERROR	1	    /* Because of an error */
@@ -123,7 +123,6 @@ Job *availableJobs;		/* Pool of available jobs */
 static Job *heldJobs;		/* Jobs not running yet because of expensive */
 static pid_t mypid;		/* Used for printing debugging messages */
 static Job *extra_job;		/* Needed for .INTERRUPT */
-static bool compatMode;		/* If we're running with compat.c don't call Make_Update */
 
 static volatile sig_atomic_t got_fatal;
 
@@ -532,8 +531,7 @@ postprocess_job(Job *job)
 		 * non-zero status that we shouldn't ignore, we call
 		 * Make_Update to update the parents. */
 		job->node->built_status = REBUILT;
-		if (!compatMode)
-			Make_Update(job->node);
+		engine_node_updated(job->node);
 	}
 	if (job->flags & JOB_KEEPERROR) {
 		job->next = errorJobs;
@@ -809,7 +807,7 @@ loop_handle_running_jobs()
 }
 
 void
-Job_Init(int maxJobs, bool compat)
+Job_Init(int maxJobs)
 {
 	Job *j;
 	int i;
@@ -819,7 +817,6 @@ Job_Init(int maxJobs, bool compat)
 	errorJobs = NULL;
 	availableJobs = NULL;
 	sequential = maxJobs == 1;
-	compatMode = compat;
 
 	/* we allocate n+1 jobs, since we may need an extra job for
 	 * running .INTERRUPT.  */

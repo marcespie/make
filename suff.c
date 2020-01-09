@@ -60,7 +60,6 @@
 #include "lst.h"
 #include "memory.h"
 #include "gnode.h"
-#include "make.h"
 #include "stats.h"
 #include "dump.h"
 #include "expandchildren.h"

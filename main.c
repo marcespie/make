@@ -57,15 +57,14 @@
 #include "pathnames.h"
 #include "init.h"
 #include "job.h"
-#include "compat.h"
 #include "targ.h"
 #include "suff.h"
 #include "str.h"
 #include "main.h"
 #include "lst.h"
 #include "memory.h"
-#include "make.h"
 #include "dump.h"
+#include "enginechoice.h"
 
 #define MAKEFLAGS	".MAKEFLAGS"
 
@@ -630,22 +629,13 @@ read_all_make_rules(bool noBuiltins, bool read_depend,
 }
 
 static void
-run_list(Lst t, bool *has_errors, bool *out_of_date)
-{
-	if (compatMake)
-		Compat_Run(t, has_errors, out_of_date);
-	else
-		Make_Run(t, has_errors, out_of_date);
-}
-
-static void
 run_node(GNode *gn, bool *has_errors, bool *out_of_date)
 {
 	LIST l;
 
 	Lst_Init(&l);
 	Lst_AtEnd(&l, gn);
-	run_list(&l, has_errors, out_of_date);
+	engine_run_list(&l, has_errors, out_of_date);
 	Lst_Destroy(&l, NOFREE);
 }
 
@@ -810,12 +800,13 @@ main(int argc, char **argv)
 		else
 			Targ_FindList(&targs, create);
 
-		Job_Init(optj, compatMake);
+		choose_engine(compatMake);
+		Job_Init(optj);
 		if (!queryFlag && node_is_real(begin_node))
 			run_node(begin_node, &errored, &outOfDate);
 
 		if (!errored)
-			run_list(&targs, &errored, &outOfDate);
+			engine_run_list(&targs, &errored, &outOfDate);
 
 		if (!queryFlag && !errored && node_is_real(end_node))
 			run_node(end_node, &errored, &outOfDate);

@@ -39,5 +39,7 @@
  *	Run the actual make engine, to create targets that need to,
  *	return info about what we did. */
 extern void Compat_Run(Lst, bool *, bool *);
+extern void Compat_Init(void);
+extern void Compat_Update(GNode *);
 
 #endif

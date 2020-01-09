@@ -511,6 +511,16 @@ add_targets_to_make(Lst todo)
 		randomize_garray(&to_build);
 }
 
+void
+Make_Init()
+{
+	/* wild guess at initial sizes */
+	Array_Init(&to_build, 500);
+	Array_Init(&examine, 150);
+	Array_Init(&heldBack, 100);
+	ohash_init(&targets, 10, &gnode_info);
+}
+
 /*-
  *-----------------------------------------------------------------------
  * Make_Run --
@@ -532,16 +542,6 @@ add_targets_to_make(Lst todo)
 void
 Make_Run(Lst targs, bool *has_errors, bool *out_of_date)
 {
-	static bool first = true;
-
-	if (first) {
-		/* wild guess at initial sizes */
-		Array_Init(&to_build, 500);
-		Array_Init(&examine, 150);
-		Array_Init(&heldBack, 100);
-		ohash_init(&targets, 10, &gnode_info);
-		first = false;
-	}
 	if (DEBUG(PARALLEL))
 		random_setup();
 
