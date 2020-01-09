@@ -265,6 +265,16 @@ CompatMake(void *gnp,	/* The node to make */
 }
 
 void
+Compat_Init()
+{
+}
+
+void
+Compat_Update(GNode *gn)
+{
+}
+
+void
 Compat_Run(Lst targs, bool *has_errors, bool *out_of_date)
 {
 	GNode	  *gn = NULL;	/* Current root target */

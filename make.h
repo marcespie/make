@@ -42,6 +42,7 @@
 
 extern void Make_Update(GNode *);
 extern void Make_Run(Lst, bool *, bool *);
+extern void Make_Init(void);
 extern long random_delay;
 extern bool nothing_left_to_build(void);
 

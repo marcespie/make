@@ -49,10 +49,10 @@
  *	register a new job running commands associated with building gn.
  */
 extern void Job_Make(GNode *);
-/* Job_Init(maxproc, compat);
+/* Job_Init(maxproc);
  *	setup job handling framework
  */
-extern void Job_Init(int, bool);
+extern void Job_Init(int);
 
 /* interface with the normal build in make.c */
 /* okay = can_start_job();
