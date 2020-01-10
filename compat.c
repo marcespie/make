@@ -271,7 +271,7 @@ Compat_Run(Lst targs)		/* List of target nodes to re-create */
 {
 	GNode	  *gn = NULL;	/* Current root target */
 	int 	  errors;   	/* Number of targets not built due to errors */
-	bool	out_of_date = false;
+	bool 	out_of_date = false;
 
 	/* For each entry in the list of targets to create, call CompatMake on
 	 * it to create the thing. CompatMake will leave the 'built_status'

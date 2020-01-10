@@ -148,6 +148,7 @@ static void may_continue_job(Job *);
 static void continue_job(Job *);
 static Job *reap_finished_job(pid_t);
 static bool reap_jobs(void);
+static void may_continue_heldback_jobs();
 
 static void loop_handle_running_jobs(void);
 static bool expensive_job(Job *);
@@ -543,7 +544,8 @@ postprocess_job(Job *job)
 		job->node->built_status = REBUILT;
 		Make_Update(job->node);
 		free(job);
-	}
+	} else if (job->exit_type != JOB_EXIT_OKAY && keepgoing)
+		free(job);
 
 	if (errorJobs != NULL && aborting != ABORT_INTERRUPT)
 		aborting = ABORT_ERROR;
@@ -745,9 +747,14 @@ remove_job(Job *job)
 {
 	nJobs--;
 	postprocess_job(job);
+}
+
+static void
+may_continue_heldback_jobs()
+{
 	while (!no_new_jobs) {
 		if (heldJobs != NULL) {
-			job = heldJobs;
+			Job *job = heldJobs;
 			heldJobs = heldJobs->next;
 			if (DEBUG(EXPENSIVE))
 				fprintf(stderr, "[%ld] cheap -> release %s\n",
@@ -802,6 +809,7 @@ reap_jobs(void)
 			job_handle_status(job, status);
 			determine_job_next_step(job);
 		}
+		may_continue_heldback_jobs();
 	}
 	/* sanity check, should not happen */
 	if (pid == -1 && errno == ECHILD && runningJobs != NULL)
