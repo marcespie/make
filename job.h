@@ -65,16 +65,6 @@ extern bool can_start_job(void);
  */
 extern bool Job_Empty(void);
 
-/* Job_End();
- *	run .END target at end.
- */
-extern void Job_End(void);
-
-/* Job_Begin();
- *	similarly, run .BEGIN job at start.
- */
-extern void Job_Begin(void);
-
 extern void Job_Wait(void);
 extern void Job_AbortAll(void);
 extern void print_errors(void);
