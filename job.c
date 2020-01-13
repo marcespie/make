@@ -138,6 +138,7 @@ static void determine_job_next_step(Job *);
 static void may_continue_job(Job *);
 static Job *reap_finished_job(pid_t);
 static bool reap_jobs(void);
+static void may_continue_heldback_jobs(void);
 
 static bool expensive_job(Job *);
 static bool expensive_command(const char *);
