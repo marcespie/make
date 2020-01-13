@@ -138,7 +138,7 @@ static void determine_job_next_step(Job *);
 static void may_continue_job(Job *);
 static Job *reap_finished_job(pid_t);
 static bool reap_jobs(void);
-static void may_continue_heldback_jobs();
+static void may_continue_heldback_jobs(void);
 
 static bool expensive_job(Job *);
 static bool expensive_command(const char *);
@@ -660,6 +660,22 @@ may_continue_job(Job *job)
 	}
 }
 
+static void
+may_continue_heldback_jobs()
+{
+	while (!no_new_jobs) {
+		if (heldJobs != NULL) {
+			Job *job = heldJobs;
+			heldJobs = heldJobs->next;
+			if (DEBUG(EXPENSIVE))
+				fprintf(stderr, "[%ld] cheap -> release %s\n",
+				    (long)mypid, job->node->name);
+			may_continue_job(job);
+		} else
+			break;
+	}
+}
+
 /*-
  *-----------------------------------------------------------------------
  * Job_Make  --
@@ -698,22 +714,6 @@ determine_job_next_step(Job *job)
 		postprocess_job(job);
 	else
 		may_continue_job(job);
-}
-
-static void
-may_continue_heldback_jobs()
-{
-	while (!no_new_jobs) {
-		if (heldJobs != NULL) {
-			Job *job = heldJobs;
-			heldJobs = heldJobs->next;
-			if (DEBUG(EXPENSIVE))
-				fprintf(stderr, "[%ld] cheap -> release %s\n",
-				    (long)mypid, job->node->name);
-			may_continue_job(job);
-		} else
-			break;
-	}
 }
 
 /*
