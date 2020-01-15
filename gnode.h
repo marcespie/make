@@ -198,9 +198,6 @@ struct command
 				     * state of the -n or -t flags */
 #define OP_JOIN 	0x00000400  /* Target is out-of-date only if any of its
 				     * children was out-of-date */
-#define OP_INVISIBLE	0x00001000  /* The node is invisible to its parents.
-				     * I.e. it doesn't show up in the parents's
-				     * local variables. */
 #define OP_NOTMAIN	0x00002000  /* The node is exempt from normal 'main
 				     * target' processing in parse.c */
 #define OP_PHONY	0x00004000  /* Not a file target; run always */

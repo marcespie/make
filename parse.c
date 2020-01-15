@@ -187,7 +187,7 @@ static struct {
     { P(NODE_EXEC),		SPECIAL_DEPRECATED,	0 },
     { P(NODE_IGNORE),		SPECIAL_IGNORE, 	OP_IGNORE },
     { P(NODE_INCLUDES),		SPECIAL_DEPRECATED,	0 },
-    { P(NODE_INVISIBLE),	SPECIAL_DEPRECATED,	OP_INVISIBLE },
+    { P(NODE_INVISIBLE),	SPECIAL_DEPRECATED,	0 },
     { P(NODE_JOIN),		SPECIAL_DEPRECATED,	OP_JOIN },
     { P(NODE_LIBS),		SPECIAL_DEPRECATED,	0 },
     { P(NODE_MADE),		SPECIAL_DEPRECATED,	0 },
@@ -337,7 +337,7 @@ ParseDoOp(GNode **gnp, unsigned int op)
 			for (ln = Lst_First(&gn->parents); ln != NULL; 
 			    ln = Lst_Adv(ln))
 				ParseLinkSrc(Lst_Datum(ln), cohort);
-			cohort->type = OP_DOUBLEDEP|OP_INVISIBLE;
+			cohort->type = OP_DOUBLEDEP;
 			Lst_AtEnd(&gn->cohorts, cohort);
 
 			/* Replace the node in the targets list with the new
