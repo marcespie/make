@@ -101,15 +101,6 @@ CompatMake(void *gnp,	/* The node to make */
 	if (pgn == NULL)
 		pgn = gn;
 
-	if (pgn->type & OP_MADE) {
-		sib = gn;
-		do {
-			sib->mtime = gn->mtime;
-			sib->built_status = UPTODATE;
-			sib = sib->sibling;
-		} while (sib != gn);
-	}
-
 	switch(gn->built_status) {
 	case UNKNOWN: 
 		/* First mark ourselves to be built, then apply whatever
