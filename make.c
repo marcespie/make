@@ -388,15 +388,6 @@ try_to_make_node(GNode *gn)
 		if (DEBUG(MAKE))
 			printf("up-to-date\n");
 		gn->built_status = UPTODATE;
-		if (gn->type & OP_JOIN) {
-			/*
-			 * Even for an up-to-date .JOIN node, we need its
-			 * local variables, so that we have the right
-			 * value for .TARGET when computing the
-			 * local variables of its parent(s)...
-			 */
-			Make_DoAllVar(gn);
-		}
 
 		Make_Update(gn);
 	}
