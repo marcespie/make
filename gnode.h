@@ -188,10 +188,6 @@ struct command
 #define OP_OPTIONAL	0x00000008  /* Don't care if the target doesn't
 				     * exist and can't be created */
 #define OP_USE		0x00000010  /* Use associated commands for parents */
-#define OP_EXEC 	0x00000020  /* Target is never out of date, but always
-				     * execute commands anyway. Its time
-				     * doesn't matter, so it has none...sort
-				     * of */
 #define OP_IGNORE	0x00000040  /* Ignore errors when creating the node */
 #define OP_PRECIOUS	0x00000080  /* Don't remove the target when
 				     * interrupted */
@@ -234,7 +230,7 @@ struct command
  */
 #define OP_NOP(t)	(((t) & OP_OPMASK) == OP_ZERO)
 
-#define OP_NOTARGET (OP_NOTMAIN|OP_USE|OP_EXEC|OP_TRANSFORM)
+#define OP_NOTARGET (OP_NOTMAIN|OP_USE|OP_TRANSFORM)
 
 
 #endif

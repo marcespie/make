@@ -117,7 +117,7 @@ TargPrintNode(GNode *gn, bool full)
 	}
 	if (full) {
 		printf("# %d unmade prerequisites\n", gn->children_left);
-		if (! (gn->type & (OP_JOIN|OP_USE|OP_EXEC))) {
+		if (! (gn->type & (OP_JOIN|OP_USE))) {
 			if (!is_out_of_date(gn->mtime)) {
 				printf("# last modified %s: %s\n",
 				      time_to_string(&gn->mtime),

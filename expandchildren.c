@@ -66,7 +66,7 @@ LinkParent(GNode *cgn, GNode *pgn)
 	Lst_AtEnd(&cgn->parents, pgn);
 	if (!has_been_built(cgn))
 		pgn->children_left++;
-	else if ( ! (cgn->type & (OP_EXEC|OP_USE))) {
+	else if ( ! (cgn->type & OP_USE)) {
 		if (cgn->built_status == REBUILT)
 			pgn->child_rebuilt = true;
 		(void)Make_TimeStamp(pgn, cgn);

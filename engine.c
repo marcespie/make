@@ -241,7 +241,7 @@ void
 Job_Touch(GNode *gn)
 {
 	handle_all_signals();
-	if (gn->type & (OP_JOIN|OP_USE|OP_EXEC|OP_OPTIONAL|OP_PHONY)) {
+	if (gn->type & (OP_JOIN|OP_USE|OP_OPTIONAL|OP_PHONY)) {
 		/*
 		 * .JOIN, .USE, and .OPTIONAL targets are "virtual" targets
 		 * and, as such, shouldn't really be created.
@@ -347,7 +347,7 @@ Make_DoAllVar(GNode *gn)
 
 	for (ln = Lst_First(&gn->children); ln != NULL; ln = Lst_Adv(ln)) {
 		child = Lst_Datum(ln);
-		if ((child->type & (OP_EXEC|OP_USE|OP_INVISIBLE)) != 0)
+		if ((child->type & (OP_USE|OP_INVISIBLE)) != 0)
 			continue;
 		if (OP_NOP(child->type) ||
 		    (target = Var(TARGET_INDEX, child)) == NULL) {
@@ -434,7 +434,7 @@ Make_OODate(GNode *gn)
 	 * Certain types of targets needn't even be sought as their datedness
 	 * doesn't depend on their modification time...
 	 */
-	if ((gn->type & (OP_JOIN|OP_USE|OP_EXEC|OP_PHONY)) == 0) {
+	if ((gn->type & (OP_JOIN|OP_USE|OP_PHONY)) == 0) {
 		(void)Dir_MTime(gn);
 		if (DEBUG(MAKE)) {
 			if (!is_out_of_date(gn->mtime))
@@ -470,7 +470,7 @@ Make_OODate(GNode *gn)
 		if (DEBUG(MAKE))
 			printf(".JOIN node...");
 		oodate = gn->child_rebuilt;
-	} else if (gn->type & (OP_FORCE|OP_EXEC|OP_PHONY)) {
+	} else if (gn->type & (OP_FORCE|OP_PHONY)) {
 		/*
 		 * A node which is the object of the force (!) operator or which
 		 * has the .EXEC attribute is always considered out-of-date.

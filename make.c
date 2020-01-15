@@ -279,7 +279,7 @@ Make_Update(GNode *cgn)	/* the child node */
 				printf("%s--=%d ",
 				    pgn->name, pgn->children_left);
 
-			if ( ! (cgn->type & (OP_EXEC|OP_USE))) {
+			if ( ! (cgn->type & OP_USE)) {
 				if (cgn->built_status == REBUILT)
 					pgn->child_rebuilt = true;
 				(void)Make_TimeStamp(pgn, cgn);

@@ -307,7 +307,6 @@ Targ_PrintType(int type)
 		switch (tbit) {
 		PRINTBIT(OPTIONAL);
 		PRINTBIT(USE);
-		PRINTBIT(EXEC);
 		PRINTBIT(IGNORE);
 		PRINTBIT(PRECIOUS);
 		PRINTBIT(SILENT);

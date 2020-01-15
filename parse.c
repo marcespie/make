@@ -184,7 +184,7 @@ static struct {
 	unsigned int special;
 	unsigned int special_op;
 } specials[] = {
-    { P(NODE_EXEC),		SPECIAL_DEPRECATED,	OP_EXEC },
+    { P(NODE_EXEC),		SPECIAL_DEPRECATED,	0 },
     { P(NODE_IGNORE),		SPECIAL_IGNORE, 	OP_IGNORE },
     { P(NODE_INCLUDES),		SPECIAL_DEPRECATED,	0 },
     { P(NODE_INVISIBLE),	SPECIAL_DEPRECATED,	OP_INVISIBLE },
