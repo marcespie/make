@@ -77,6 +77,8 @@
 #define SPECIAL_NOTHING 	6U	/* this is used for things we
 					 * recognize for compatibility but
 					 * don't do anything with... */
+#define SPECIAL_DEPRECATED	7U	/* this is an old keyword and it will
+					 * trigger a fatal error. */
 #define SPECIAL_INVISIBLE	8U
 #define SPECIAL_JOIN		9U
 #define SPECIAL_MADE		11U
