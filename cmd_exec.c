@@ -35,6 +35,7 @@
 #include "buf.h"
 #include "memory.h"
 #include "pathnames.h"
+#include "job.h"
 
 char *
 Cmd_Exec(const char *cmd, char **err)
@@ -67,6 +68,7 @@ Cmd_Exec(const char *cmd, char **err)
 	/* Fork */
 	switch (cpid = fork()) {
 	case 0:
+		reset_signal_mask();
 		/* Close input side of pipe */
 		(void)close(fds[0]);
 
