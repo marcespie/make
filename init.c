@@ -41,6 +41,7 @@
 void
 Init(void)
 {
+	Sigset_Init();
 	Init_Timestamp();
 	Init_Stats();
 	Targ_Init();

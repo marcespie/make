@@ -783,6 +783,7 @@ do_run_command(Job *job, const char *pre)
 		Punt("Could not fork");
 		/*NOTREACHED*/
 	case 0:
+		reset_signal_mask();
 		/* put a random delay unless we're the only job running
 		 * and there's nothing left to do.
 		 */

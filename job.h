@@ -54,6 +54,9 @@ extern void Job_Make(GNode *);
  */
 extern void Job_Init(int);
 
+/* save signal mask at start */
+extern void Sigset_Init();
+
 /* interface with the normal build in make.c */
 /* okay = can_start_job();
  *	can we run new jobs right now ?
@@ -78,6 +81,7 @@ extern void handle_running_jobs(void);
  *	handle running jobs until they're finished.
  */
 extern void loop_handle_running_jobs(void);
+extern void reset_signal_mask(void);
 
 /* handle_all_signals();
  *	if a signal was received, react accordingly.
