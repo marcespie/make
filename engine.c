@@ -347,8 +347,7 @@ Make_DoAllVar(GNode *gn)
 
 	for (ln = Lst_First(&gn->children); ln != NULL; ln = Lst_Adv(ln)) {
 		child = Lst_Datum(ln);
-		if ((child->type & OP_USE) != 0 || 
-		    (child->type & OP_OPMASK) == OP_DOUBLEDEP)
+		if ((child->type & (OP_USE|OP_INVISIBLE)) != 0)
 			continue;
 		if (OP_NOP(child->type) ||
 		    (target = Var(TARGET_INDEX, child)) == NULL) {

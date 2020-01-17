@@ -196,6 +196,10 @@ struct command
 				     * commands should always be executed when
 				     * it is out of date, regardless of the
 				     * state of the -n or -t flags */
+#define OP_INVISIBLE	0x00001000  /* The node is invisible to its parents.
+				     * I.e. it doesn't show up in the parents's
+				     * local variables. Used by :: for
+				     * supplementary nodes (cohorts). */
 #define OP_NOTMAIN	0x00002000  /* The node is exempt from normal 'main
 				     * target' processing in parse.c */
 #define OP_PHONY	0x00004000  /* Not a file target; run always */

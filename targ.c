@@ -311,6 +311,7 @@ Targ_PrintType(int type)
 		PRINTBIT(PRECIOUS);
 		PRINTBIT(SILENT);
 		PRINTBIT(MAKE);
+		PRINTBIT(INVISIBLE);
 		PRINTBIT(NOTMAIN);
 		/*XXX: MEMBER is defined, so CONCAT(OP_,MEMBER) gives OP_"%" */
 		case OP_MEMBER:

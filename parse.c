@@ -337,7 +337,7 @@ ParseDoOp(GNode **gnp, unsigned int op)
 			for (ln = Lst_First(&gn->parents); ln != NULL; 
 			    ln = Lst_Adv(ln))
 				ParseLinkSrc(Lst_Datum(ln), cohort);
-			cohort->type = OP_DOUBLEDEP;
+			cohort->type = OP_DOUBLEDEP|OP_INVISIBLE;
 			Lst_AtEnd(&gn->cohorts, cohort);
 
 			/* Replace the node in the targets list with the new
