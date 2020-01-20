@@ -216,6 +216,8 @@ CompatMake(void *gnp,	/* The node to make */
 			if (DEBUG(MAKE))
 				printf("update time: %s\n",
 				    time_to_string(&gn->mtime));
+			pgn->child_rebuilt = true;
+			Make_TimeStamp(pgn, gn);
 		} else if (keepgoing)
 			pgn->built_status = ABORTED;
 		else {
