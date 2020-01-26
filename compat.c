@@ -101,15 +101,6 @@ CompatMake(void *gnp,	/* The node to make */
 	if (pgn == NULL)
 		pgn = gn;
 
-	if (pgn->type & OP_MADE) {
-		sib = gn;
-		do {
-			sib->mtime = gn->mtime;
-			sib->built_status = UPTODATE;
-			sib = sib->sibling;
-		} while (sib != gn);
-	}
-
 	switch(gn->built_status) {
 	case UNKNOWN: 
 		/* First mark ourselves to be built, then apply whatever
@@ -225,10 +216,8 @@ CompatMake(void *gnp,	/* The node to make */
 			if (DEBUG(MAKE))
 				printf("update time: %s\n",
 				    time_to_string(&gn->mtime));
-			if (!(gn->type & OP_EXEC)) {
-				pgn->child_rebuilt = true;
-				Make_TimeStamp(pgn, gn);
-			}
+			pgn->child_rebuilt = true;
+			Make_TimeStamp(pgn, gn);
 		} else if (keepgoing)
 			pgn->built_status = ABORTED;
 		else {
@@ -247,14 +236,11 @@ CompatMake(void *gnp,	/* The node to make */
 		pgn->built_status = ABORTED;
 		break;
 	case REBUILT:
-		if ((gn->type & OP_EXEC) == 0) {
-			pgn->child_rebuilt = true;
-			Make_TimeStamp(pgn, gn);
-		}
+		pgn->child_rebuilt = true;
+		Make_TimeStamp(pgn, gn);
 		break;
 	case UPTODATE:
-		if ((gn->type & OP_EXEC) == 0)
-			Make_TimeStamp(pgn, gn);
+		Make_TimeStamp(pgn, gn);
 		break;
 	default:
 		break;
